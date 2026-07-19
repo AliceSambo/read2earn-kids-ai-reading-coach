@@ -19,6 +19,9 @@ for (const term of ['custom name','Knowledge Gem','reduced-motion','No open chil
 if (/OPENAI_API_KEY|sk-[a-z0-9]/i.test(client)) throw new Error('Client contains a secret or API-key reference');
 if (/\bonclick\s*=/i.test(html)) throw new Error('Inline onclick JavaScript is not allowed');
 if (/(^|[^.])\bspeechSynthesis\?\./m.test(client)) throw new Error('Speech synthesis must use safe window-based feature detection');
+for (const toastRequirement of ['let toastTimeout = null;', 'function clearToast()', 'clearTimeout(toastTimeout)', 'toastTimeout = setTimeout', 'toastTimeout = null;']) {
+  if (!client.includes(toastRequirement)) throw new Error(`Toast lifecycle missing: ${toastRequirement}`);
+}
 for (const label of ['Emerging Reader','Growing Reader','Confident Reader','PROTOTYPE GROWN-UP GATE']) {
   if (!html.includes(label)) throw new Error(`Missing privacy or grown-up gate element: ${label}`);
 }

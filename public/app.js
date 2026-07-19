@@ -9,6 +9,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const blockedNameWords = new Set(['hate', 'kill', 'sex', 'stupid', 'idiot']);
 let recognition;
+let toastTimeout = null;
 
 async function loadStory() {
   const response = await fetch('/data/story.json');
@@ -23,16 +24,30 @@ function showScreen(name) {
     screen.classList.toggle('active', active);
     screen.hidden = !active;
   });
+  clearToast();
   window.speechSynthesis?.cancel();
   window.scrollTo({ top: 0, behavior: state.reducedMotion ? 'auto' : 'smooth' });
   requestAnimationFrame(() => $('.screen.active')?.focus({ preventScroll: true }));
 }
 
+function clearToast() {
+  const node = $('#toast');
+  node.classList.remove('show');
+  node.textContent = '';
+  if (toastTimeout !== null) clearTimeout(toastTimeout);
+  toastTimeout = null;
+}
+
 function toast(message) {
+  clearToast();
   const node = $('#toast');
   node.textContent = message;
   node.classList.add('show');
-  setTimeout(() => node.classList.remove('show'), 2400);
+  toastTimeout = setTimeout(() => {
+    node.classList.remove('show');
+    node.textContent = '';
+    toastTimeout = null;
+  }, 2400);
 }
 
 function cleanName(value, fallback) {
