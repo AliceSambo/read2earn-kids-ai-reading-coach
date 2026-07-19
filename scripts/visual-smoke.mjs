@@ -54,6 +54,15 @@ try {
   await page.getByRole('button', { name: /read with my companion/i }).click();
   await page.evaluate(() => Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: undefined }));
   await page.getByRole('button', { name: /read this part/i }).click();
+  await page.waitForTimeout(700);
+  await page.getByRole('button', { name: /open comfort settings/i }).click();
+  await page.locator('#quietMode').check();
+  await page.getByRole('button', { name: /save settings/i }).click();
+  await page.getByRole('button', { name: /read this part/i }).click();
+  await page.waitForTimeout(1800);
+  if (await page.locator('#toast').textContent() !== 'Quiet mode is on.' || !await page.locator('#toast').evaluate((node) => node.classList.contains('show'))) {
+    throw new Error('An earlier toast timeout cleared the newer live-region message.');
+  }
   await page.getByRole('button', { name: /next part/i }).click();
   await page.getByRole('button', { name: /next part/i }).click();
   await page.getByRole('button', { name: 'patiently' }).click();
