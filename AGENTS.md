@@ -5,6 +5,7 @@ This repository implements the approved **Living Reading Missions** prototype. E
 ## Product invariants
 
 - The child chooses an appearance and gives the companion a custom name during first-time setup. Use a child-safe name screen and a neutral fallback; never force a predetermined name.
+- A clearly labelled prototype grown-up gate must confirm the nickname, companion appearance and name, reading level, and narration preferences before the learning world opens. Local name screening is basic assistance, not guaranteed moderation, and the adult can correct choices.
 - The complete prototype journey includes the world map, a story mission, three reading modes, vocabulary/pronunciation support, spoken or typed comprehension, encouraging feedback, an evidence-backed Knowledge Gem, a five-face enjoyment rating, and an adult learning report.
 - Knowledge Gems represent demonstrated skills. Never reward mere page completion or time spent.
 - Adult reports explain what the child understood, words explored, help used, and a useful next activity.
@@ -14,6 +15,7 @@ This repository implements the approved **Living Reading Missions** prototype. E
 
 - No open child profiles, direct messaging, public feeds, location, targeted advertising, manipulative streaks, tradable rewards, or child-controlled payments.
 - Do not collect a full legal name. Treat the child-entered name as an on-device nickname.
+- Use Emerging Reader, Growing Reader, or Confident Reader instead of collecting a birth date.
 - Do not place API keys, credentials, or privileged service calls in client code. AI calls must go through the server and have a safe local fallback.
 - Never shame, rank, frighten, or pressure a child. Feedback must be warm, specific, and retry-friendly.
 - Sharing, school identity, accounts, cloud voice storage, microphones, AI processing, and payments require explicit adult controls and are outside this prototype unless separately approved.

@@ -41,15 +41,26 @@ try {
   await page.getByLabel(/what should we call you/i).fill('Mina');
   await page.getByLabel('Name your companion').fill('Nova');
   await page.getByRole('button', { name: /meet my companion/i }).click();
+  if (!await page.locator('[data-screen="confirm"]').isVisible() || await page.locator('[data-screen="map"]').isVisible()) throw new Error('Learning world opened before grown-up confirmation.');
+  if (!await page.locator('#confirmProfile').isDisabled()) throw new Error('Grown-up confirmation action should begin disabled.');
+  await page.screenshot({ path: join(outputDir, 'read2earn-grown-up-gate-desktop.png'), fullPage: true });
+  await page.getByLabel(/Growing Reader/).check();
+  await page.locator('#onboardingSpeechRate').fill('1');
+  await page.getByLabel(/I’m a grown-up/i).check();
+  await page.getByRole('button', { name: /confirm & enter learning world/i }).click();
+  const profile = await page.evaluate(() => JSON.parse(localStorage.getItem('read2earn-demo-profile')));
+  if (profile?.readingLevel !== 'growing' || profile?.grownUpConfirmed !== true) throw new Error('Reading level or grown-up confirmation was not saved.');
   await page.getByRole('button', { name: /story forest/i }).click();
   await page.getByRole('button', { name: /read with my companion/i }).click();
+  await page.evaluate(() => Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: undefined }));
+  await page.getByRole('button', { name: /read this part/i }).click();
   await page.getByRole('button', { name: /next part/i }).click();
   await page.getByRole('button', { name: /next part/i }).click();
   await page.getByRole('button', { name: 'patiently' }).click();
   await page.getByText(/in a calm way while giving something enough time/i).waitFor();
   await page.getByRole('button', { name: /next part/i }).click();
   await page.getByRole('button', { name: /tell what happened/i }).click();
-  await page.getByPlaceholder(/i think nia helped/i).fill('Nia walked in the forest.');
+  await page.getByPlaceholder(/i think nia helped/i).fill('The light was safe');
   await page.getByRole('button', { name: /share with my companion/i }).click();
   await page.getByRole('button', { name: /improve my answer/i }).waitFor();
   if (await page.locator('#gemCount').textContent() !== '0' || await page.locator('[data-screen="reward"]').isVisible()) throw new Error('Knowledge Gem was exposed without comprehension evidence.');
@@ -64,6 +75,8 @@ try {
   if (await page.locator('#reportStories').textContent() !== '1') throw new Error('Completed-story evidence missing from report.');
   if (await page.locator('#reportGems').textContent() !== '1') throw new Error('Knowledge Gem evidence missing from report.');
   if (await page.locator('#reportName').textContent() !== 'Mina') throw new Error('Custom child nickname missing from report.');
+  if (await page.locator('#reportLevel').textContent() !== 'Growing Reader') throw new Error('Saved reading level missing from report.');
+  await page.waitForTimeout(2500);
   await page.screenshot({ path: join(outputDir, 'read2earn-report-desktop.png'), fullPage: true });
   await desktop.close();
 
@@ -75,7 +88,7 @@ try {
   await mobilePage.screenshot({ path: join(outputDir, 'read2earn-welcome-mobile.png'), fullPage: true });
   await mobile.close();
 
-  console.log(`Visual journey passed: custom naming, story navigation, vocabulary, comprehension gate, Knowledge Gem, parent report, and mobile overflow. Screenshots: ${outputDir}`);
+  console.log(`Visual journey passed: grown-up gate, reading level, speech fallback, custom naming, story navigation, vocabulary, strict comprehension, Knowledge Gem, parent report, and mobile overflow. Screenshots: ${outputDir}`);
 } finally {
   await browser?.close();
   server.kill();

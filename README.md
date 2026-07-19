@@ -7,6 +7,7 @@ This Build Week prototype demonstrates one complete, privacy-forward journey thr
 ## Signature experience
 
 - Child-selected companion appearance and custom companion name
+- Prototype grown-up confirmation gate with adult correction and privacy-minimising reading levels
 - Interactive learning-world map and reactive Story Forest mission
 - Read by myself, read with companion, and listen-and-follow modes
 - Browser narration with speed and quiet-mode controls
@@ -38,7 +39,7 @@ Open `http://127.0.0.1:4173`.
 npm test
 ```
 
-The validation checks JavaScript syntax, required project files and screens, secret boundaries, story data, static serving, and the deterministic comprehension fallback.
+The validation checks JavaScript syntax, required project files and screens, the grown-up gate, reading-level persistence, speech fallback, secret boundaries, story data, static serving, and the three-category deterministic comprehension fallback.
 
 ## Project references
 

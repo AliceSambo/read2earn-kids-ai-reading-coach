@@ -1,12 +1,13 @@
 const state = {
   screen: 'welcome', childName: '', companionName: 'Kiko', avatar: '🦊', mode: 'together', page: 0,
   story: null, wordsExplored: new Set(), answer: '', feedback: null, rating: null, gems: 0,
-  quiet: false, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, speechRate: .9
+  quiet: false, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, speechRate: .9,
+  readingLevel: 'emerging', grownUpConfirmed: false
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const safeTerms = ['hate', 'kill', 'sex', 'stupid', 'idiot'];
+const blockedNameWords = new Set(['hate', 'kill', 'sex', 'stupid', 'idiot']);
 let recognition;
 
 async function loadStory() {
@@ -15,14 +16,14 @@ async function loadStory() {
 }
 
 function showScreen(name) {
-  if (!name || (name === 'map' && !state.childName)) name = name === 'map' ? 'welcome' : name;
+  if (!name || (name === 'map' && !state.grownUpConfirmed)) name = name === 'map' ? (state.childName ? 'confirm' : 'welcome') : name;
   state.screen = name;
   $$('.screen').forEach((screen) => {
     const active = screen.dataset.screen === name;
     screen.classList.toggle('active', active);
     screen.hidden = !active;
   });
-  speechSynthesis?.cancel();
+  window.speechSynthesis?.cancel();
   window.scrollTo({ top: 0, behavior: state.reducedMotion ? 'auto' : 'smooth' });
   requestAnimationFrame(() => $('.screen.active')?.focus({ preventScroll: true }));
 }
@@ -35,9 +36,10 @@ function toast(message) {
 }
 
 function cleanName(value, fallback) {
-  const clean = value.trim().replace(/[^a-zA-ZÀ-ÿ' -]/g, '').replace(/\s+/g, ' ').slice(0, 18);
+  const clean = String(value).normalize('NFKC').trim().replace(/[^\p{L}' -]/gu, '').replace(/\s+/g, ' ').slice(0, 18);
   if (!clean) return fallback;
-  if (safeTerms.some((term) => clean.toLowerCase().includes(term))) return null;
+  const words = clean.toLocaleLowerCase().split(/[\s'-]+/u).filter(Boolean);
+  if (words.some((word) => blockedNameWords.has(word))) return null;
   return clean;
 }
 
@@ -45,13 +47,40 @@ function saveCompanion() {
   const child = cleanName($('#childName').value, 'Explorer');
   const companion = cleanName($('#companionName').value, 'Kiko');
   if (!child || !companion) {
-    $('#nameError').textContent = 'Please choose kind, friendly names. A trusted grown-up can help.';
+    $('#nameError').textContent = 'Our basic local screening flagged a name. It is not guaranteed moderation; please ask a grown-up to review or correct it.';
     return;
   }
   state.childName = child;
   state.companionName = companion;
   state.avatar = $('input[name=avatar]:checked').value;
   $('#nameError').textContent = '';
+  updateIdentity();
+  renderConfirmation();
+  showScreen('confirm');
+}
+
+function renderConfirmation() {
+  $('#confirmChildName').textContent = state.childName;
+  $('#confirmAvatar').textContent = state.avatar;
+  $('#confirmCompanionName').textContent = state.companionName;
+  $('#onboardingQuietMode').checked = state.quiet;
+  $('#onboardingSpeechRate').value = state.speechRate;
+  $('#onboardingSpeedOutput').textContent = `${state.speechRate.toFixed(1)}×`;
+}
+
+function confirmProfile() {
+  if (!$('#grownUpGate').checked) return;
+  state.readingLevel = $('input[name=readingLevel]:checked')?.value || 'emerging';
+  state.quiet = $('#onboardingQuietMode').checked;
+  state.speechRate = Number($('#onboardingSpeechRate').value);
+  state.grownUpConfirmed = true;
+  localStorage.setItem('read2earn-demo-profile', JSON.stringify({
+    childName: state.childName, companionName: state.companionName, avatar: state.avatar,
+    readingLevel: state.readingLevel, quiet: state.quiet, speechRate: state.speechRate, grownUpConfirmed: true
+  }));
+  $('#quietMode').checked = state.quiet;
+  $('#speechRate').value = state.speechRate;
+  $('#speedOutput').textContent = `${state.speechRate.toFixed(1)}×`;
   updateIdentity();
   showScreen('map');
 }
@@ -63,6 +92,7 @@ function updateIdentity() {
   $('#readerEncouragement').textContent = `${state.companionName} is exploring with you.`;
   $('#reportName').textContent = state.childName;
   $('#reportCompanion').textContent = state.companionName;
+  $('#reportLevel').textContent = ({ emerging: 'Emerging Reader', growing: 'Growing Reader', confident: 'Confident Reader' })[state.readingLevel] || 'Emerging Reader';
 }
 
 function selectMode(mode) {
@@ -109,24 +139,24 @@ function showWord(word) {
 }
 
 function speak(text) {
-  if (state.quiet || !('speechSynthesis' in window)) {
+  if (state.quiet || !window.speechSynthesis || typeof window.SpeechSynthesisUtterance !== 'function') {
     toast(state.quiet ? 'Quiet mode is on.' : 'Spoken narration is not supported here.');
     return;
   }
-  speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.cancel();
+  const utterance = new window.SpeechSynthesisUtterance(text);
   utterance.rate = state.speechRate;
   utterance.pitch = 1.05;
   utterance.onstart = () => $('#storyText').classList.add('is-speaking');
   utterance.onend = () => $('#storyText').classList.remove('is-speaking');
   utterance.onerror = () => $('#storyText').classList.remove('is-speaking');
-  speechSynthesis.speak(utterance);
+  window.speechSynthesis.speak(utterance);
 }
 
 function speakCurrentPart() { speak(state.story.paragraphs[state.page]); }
 
 function nextPage() {
-  speechSynthesis?.cancel();
+  window.speechSynthesis?.cancel();
   if (state.page < state.story.paragraphs.length - 1) {
     state.page += 1;
     renderPage();
@@ -209,7 +239,7 @@ function continueToReward() {
 function finishMission() {
   state.rating = Number($('input[name=rating]:checked')?.value || 0) || null;
   updateReport();
-  const saved = { childName: state.childName, companionName: state.companionName, avatar: state.avatar, mode: state.mode, words: [...state.wordsExplored], rating: state.rating, gems: state.gems, evidence: state.feedback?.evidence || [], feedback: state.feedback };
+  const saved = { childName: state.childName, companionName: state.companionName, avatar: state.avatar, readingLevel: state.readingLevel, grownUpConfirmed: state.grownUpConfirmed, mode: state.mode, words: [...state.wordsExplored], rating: state.rating, gems: state.gems, evidence: state.feedback?.evidence || [], feedback: state.feedback };
   localStorage.setItem('read2earn-demo-progress', JSON.stringify(saved));
   showScreen('report');
 }
@@ -239,9 +269,22 @@ function restoreProgress() {
   } catch { localStorage.removeItem('read2earn-demo-progress'); }
 }
 
+function restoreProfile() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('read2earn-demo-profile'));
+    if (!saved?.grownUpConfirmed) return;
+    Object.assign(state, saved);
+    updateIdentity();
+  } catch { localStorage.removeItem('read2earn-demo-profile'); }
+}
+
 function bindEvents() {
   $$('[data-go]').forEach((button) => button.addEventListener('click', () => showScreen(button.dataset.go)));
   $('#saveCompanion').addEventListener('click', saveCompanion);
+  $('#backToSetup').addEventListener('click', () => showScreen('setup'));
+  $('#grownUpGate').addEventListener('change', (event) => { $('#confirmProfile').disabled = !event.target.checked; });
+  $('#confirmProfile').addEventListener('click', confirmProfile);
+  $('#onboardingSpeechRate').addEventListener('input', (event) => { $('#onboardingSpeedOutput').textContent = `${Number(event.target.value).toFixed(1)}×`; });
   $$('[data-mode]').forEach((button) => button.addEventListener('click', () => selectMode(button.dataset.mode)));
   $('#nextPage').addEventListener('click', nextPage);
   $('#narrateButton').addEventListener('click', speakCurrentPart);
@@ -254,7 +297,8 @@ function bindEvents() {
   $('#continueToReward').addEventListener('click', continueToReward);
   $('#finishMission').addEventListener('click', finishMission);
   $('#settingsButton').addEventListener('click', () => $('#settingsDialog').showModal());
-  $('#quietMode').addEventListener('change', (event) => { state.quiet = event.target.checked; if (state.quiet) speechSynthesis?.cancel(); });
+  $('#quietMode').addEventListener('change', (event) => { state.quiet = event.target.checked; if (state.quiet) window.speechSynthesis?.cancel(); });
+  $('#printReport').addEventListener('click', () => window.print());
   $('#reducedMotion').addEventListener('change', (event) => { state.reducedMotion = event.target.checked; document.body.classList.toggle('reduce-motion', state.reducedMotion); });
   $('#speechRate').addEventListener('input', (event) => { state.speechRate = Number(event.target.value); $('#speedOutput').textContent = `${state.speechRate.toFixed(1)}×`; });
   $('#settingsDialog').addEventListener('close', () => {
@@ -276,6 +320,7 @@ await loadStory();
 $$('.screen').forEach((screen) => screen.hidden = screen.dataset.screen !== 'welcome');
 bindEvents();
 restoreSettings();
+restoreProfile();
 restoreProgress();
 document.body.classList.toggle('reduce-motion', state.reducedMotion);
 $('#reducedMotion').checked = state.reducedMotion;

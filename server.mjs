@@ -14,13 +14,17 @@ const port = Number(process.env.PORT || 4173);
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
 
 function localFeedback(answer = '') {
-  const text = answer.toLowerCase();
-  const ideas = ['firefly', 'help', 'patient', 'patience', 'wait', 'safe', 'light'];
-  const matched = ideas.filter((idea) => text.includes(idea));
-  const understood = matched.length >= 2;
+  const text = String(answer).normalize('NFKC').toLowerCase();
+  const categories = {
+    character: /\b(lumi|firefly)\b/.test(text),
+    action: /\b(help(?:ed|ing|s)?|wait(?:ed|ing|s)?(?:\s+patiently)?|patient(?:ly|ce)?|gentl(?:e|y)|guid(?:e|ed|ing|es)|protect(?:ed|ing|s)?)\b/.test(text),
+    outcome: /\b(?:path|forest)\b[^.!?]{0,60}\b(?:safe|safer|bright|brighter|glow(?:ed|ing|s)?)\b|\b(?:safe|safer|bright|brighter|glow(?:ed|ing|s)?)\b[^.!?]{0,60}\b(?:path|forest)\b|\blantern\b[^.!?]{0,60}\b(?:restor(?:e|ed|ing)|relit|lit|glow(?:ed|ing|s)?|bright|brighter)\b|\b(?:restor(?:e|ed|ing)|relit|lit)\b[^.!?]{0,60}\blantern\b/.test(text)
+  };
+  const evidence = Object.entries(categories).filter(([, present]) => present).map(([category]) => category);
+  const understood = Object.values(categories).every(Boolean);
   return {
     understood,
-    evidence: matched,
+    evidence,
     message: understood
       ? 'You noticed how Nia helped the firefly patiently and made the forest safer. That shows strong story understanding.'
       : 'You remembered part of the mission. Look again for who needed help, what Nia did, and what changed in the forest.',
@@ -91,13 +95,14 @@ const server = createServer(async (request, response) => {
   try {
     if (request.method === 'POST' && request.url === '/api/comprehension') {
       const { answer } = await bodyOf(request);
-      const enhanced = await aiFeedback(answer);
+      const deterministic = localFeedback(answer);
+      const enhanced = deterministic.understood ? await aiFeedback(answer) : null;
       response.writeHead(200, {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-store',
         'X-Feedback-Source': enhanced ? 'ai' : 'local'
       });
-      response.end(JSON.stringify(enhanced || localFeedback(answer)));
+      response.end(JSON.stringify(enhanced ? { ...enhanced, understood: true, evidence: deterministic.evidence } : deterministic));
       return;
     }
     const requested = request.url === '/' ? 'index.html' : request.url.split('?')[0].replace(/^\/+/, '');

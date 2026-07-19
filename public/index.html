@@ -61,6 +61,32 @@
         </div>
       </section>
 
+      <section class="screen" data-screen="confirm" aria-labelledby="confirm-title" tabindex="-1">
+        <div class="panel setup-panel confirmation-panel">
+          <button class="back-button" id="backToSetup">← Correct these choices</button>
+          <p class="eyebrow">PROTOTYPE GROWN-UP GATE • 2 OF 2</p>
+          <h2 id="confirm-title">Grown-up, please confirm these choices</h2>
+          <p>This prototype gate asks an adult to review the child’s choices before the learning world opens.</p>
+          <div class="confirmation-summary" aria-label="Profile choices to review">
+            <div><small>CHILD NICKNAME</small><b id="confirmChildName">Explorer</b></div>
+            <div><small>COMPANION</small><b><span id="confirmAvatar">🦊</span> <span id="confirmCompanionName">Kiko</span></b></div>
+          </div>
+          <fieldset class="reading-levels">
+            <legend>Choose a reading level <small>No birth date is collected.</small></legend>
+            <label><input type="radio" name="readingLevel" value="emerging" checked /><span><b>Emerging Reader</b><small>Learning sounds, words, and short sentences.</small></span></label>
+            <label><input type="radio" name="readingLevel" value="growing" /><span><b>Growing Reader</b><small>Reading short stories with occasional support.</small></span></label>
+            <label><input type="radio" name="readingLevel" value="confident" /><span><b>Confident Reader</b><small>Reading independently and discussing ideas.</small></span></label>
+          </fieldset>
+          <div class="confirmation-preferences">
+            <label class="setting-row"><span><b>Quiet mode</b><small>Turns off spoken narration.</small></span><input id="onboardingQuietMode" type="checkbox" role="switch" /></label>
+            <label class="setting-range" for="onboardingSpeechRate"><span><b>Narration speed</b><output id="onboardingSpeedOutput">0.9×</output></span><input id="onboardingSpeechRate" type="range" min="0.6" max="1.2" step="0.1" value="0.9" /></label>
+          </div>
+          <p class="gate-note">Name screening is a basic local check, not guaranteed moderation. Please review and correct the nickname or companion name if needed.</p>
+          <label class="grown-up-check"><input id="grownUpGate" type="checkbox" /><span>I’m a grown-up and I have reviewed the nickname, companion, reading level, and narration choices.</span></label>
+          <button class="primary-button full-button" id="confirmProfile" disabled>Confirm & enter learning world</button>
+        </div>
+      </section>
+
       <section class="screen" data-screen="map" aria-labelledby="map-title" tabindex="-1">
         <div class="section-heading"><div><p class="eyebrow">YOUR LEARNING WORLD</p><h2 id="map-title">Where will we explore today?</h2><p id="mapGreeting">Every path holds something new to discover.</p></div><button class="adult-link" data-go="report">Grown-up report <span aria-hidden="true">↗</span></button></div>
         <div class="world-map">
@@ -100,8 +126,8 @@
       </section>
 
       <section class="screen" data-screen="report" aria-labelledby="report-title" tabindex="-1">
-        <div class="report-heading"><div><p class="eyebrow">GROWN-UP VIEW • ON-DEVICE DEMO</p><h2 id="report-title">A learning report with real evidence</h2><p>This prototype stores progress in this browser only. No child profile or reading audio is uploaded.</p></div><button class="secondary-button" onclick="window.print()">🖨 Print report</button></div>
-        <div class="report-grid"><article class="report-summary"><div class="report-child"><span id="reportAvatar">🦊</span><div><small>READER NICKNAME</small><h3 id="reportName">Explorer</h3><p>Learning with <b id="reportCompanion">Kiko</b></p></div></div><div class="report-stats"><div><b id="reportStories">0</b><span>Story completed</span></div><div><b id="reportGems">0</b><span>Knowledge Gem</span></div><div><b id="reportRating">—</b><span>Enjoyment / 10</span></div></div></article><article><p class="eyebrow">COMPREHENSION</p><h3 id="reportUnderstanding">Mission not completed yet</h3><p id="reportEvidence">Complete the Story Forest mission to create evidence of understanding.</p><span class="evidence-pill" id="evidencePill">Awaiting evidence</span></article><article><p class="eyebrow">WORDS EXPLORED</p><h3 id="reportWords">No words selected yet</h3><p>Vocabulary support is available through meanings, syllables, and spoken pronunciation.</p></article><article><p class="eyebrow">SUPPORT USED</p><h3 id="reportMode">Not selected yet</h3><p id="reportSupport">The child can choose independent, companion-supported, or listen-and-follow reading.</p></article><article class="next-step"><p class="eyebrow">TRY THIS TOGETHER NEXT</p><h3>Ask: “What does patience mean in your own words?”</h3><p>After the mission, invite your child to connect Nia’s choice to a time they helped someone calmly.</p></article></div><div class="button-row"><button class="primary-button" data-go="map">Return to learning world</button><button class="text-button" data-go="welcome">Restart demo</button></div>
+        <div class="report-heading"><div><p class="eyebrow">GROWN-UP VIEW • ON-DEVICE DEMO</p><h2 id="report-title">A learning report with real evidence</h2><p>This prototype stores progress in this browser only. No child profile or reading audio is uploaded.</p></div><button class="secondary-button" id="printReport">🖨 Print report</button></div>
+        <div class="report-grid"><article class="report-summary"><div class="report-child"><span id="reportAvatar">🦊</span><div><small>READER NICKNAME</small><h3 id="reportName">Explorer</h3><p>Learning with <b id="reportCompanion">Kiko</b></p><p>Level: <b id="reportLevel">Emerging Reader</b></p></div></div><div class="report-stats"><div><b id="reportStories">0</b><span>Story completed</span></div><div><b id="reportGems">0</b><span>Knowledge Gem</span></div><div><b id="reportRating">—</b><span>Enjoyment / 10</span></div></div></article><article><p class="eyebrow">COMPREHENSION</p><h3 id="reportUnderstanding">Mission not completed yet</h3><p id="reportEvidence">Complete the Story Forest mission to create evidence of understanding.</p><span class="evidence-pill" id="evidencePill">Awaiting evidence</span></article><article><p class="eyebrow">WORDS EXPLORED</p><h3 id="reportWords">No words selected yet</h3><p>Vocabulary support is available through meanings, syllables, and spoken pronunciation.</p></article><article><p class="eyebrow">SUPPORT USED</p><h3 id="reportMode">Not selected yet</h3><p id="reportSupport">The child can choose independent, companion-supported, or listen-and-follow reading.</p></article><article class="next-step"><p class="eyebrow">TRY THIS TOGETHER NEXT</p><h3>Ask: “What does patience mean in your own words?”</h3><p>After the mission, invite your child to connect Nia’s choice to a time they helped someone calmly.</p></article></div><div class="button-row"><button class="primary-button" data-go="map">Return to learning world</button><button class="text-button" data-go="welcome">Restart demo</button></div>
       </section>
     </main>
 
