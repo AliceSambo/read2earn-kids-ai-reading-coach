@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: read2earn-kids-ai-reading-coach
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: OPENAI_MODEL
+        value: gpt-5.6

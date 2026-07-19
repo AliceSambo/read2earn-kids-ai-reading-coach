@@ -11,6 +11,7 @@ try {
 
 const root = fileURLToPath(new URL('./public/', import.meta.url));
 const port = Number(process.env.PORT || 4173);
+const host = process.env.HOST || '0.0.0.0';
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
 
 function localFeedback(answer = '') {
@@ -93,6 +94,11 @@ async function bodyOf(request) {
 
 const server = createServer(async (request, response) => {
   try {
+    if (request.method === 'GET' && request.url?.split('?')[0] === '/health') {
+      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      response.end(JSON.stringify({ status: 'ok' }));
+      return;
+    }
     if (request.method === 'POST' && request.url === '/api/comprehension') {
       const { answer } = await bodyOf(request);
       const deterministic = localFeedback(answer);
@@ -118,4 +124,4 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(port, '127.0.0.1', () => console.log(`Read2Earn Kids running at http://127.0.0.1:${port}`));
+server.listen(port, host, () => console.log(`Read2Earn Kids running on ${host}:${port}`));
