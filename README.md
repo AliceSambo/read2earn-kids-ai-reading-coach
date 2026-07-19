@@ -41,6 +41,42 @@ npm test
 
 The validation checks JavaScript syntax, required project files and screens, the grown-up gate, reading-level persistence, speech fallback, secret boundaries, story data, static serving, and the three-category deterministic comprehension fallback.
 
+GitHub Actions runs `npm test` and `git diff --check` with Node.js 20 for every push and pull request targeting `main`. No GitHub Actions secret is required: CI deliberately exercises the deterministic fallback-only demo.
+
+## Deployment preparation
+
+The recommended route is a Render web service using the committed [`render.yaml`](render.yaml):
+
+1. In Render, create a new **Blueprint** from this repository.
+2. Review the proposed `read2earn-kids-ai-reading-coach` web service.
+3. Deploy it without `OPENAI_API_KEY` first; the complete deterministic demo works without AI credentials.
+4. Confirm `GET /health` returns `{ "status": "ok" }` and then complete the smoke checklist below.
+5. Optionally add `OPENAI_API_KEY` as a private Render environment variable. Never put its value in GitHub, client JavaScript, `render.yaml`, or `.env.example`.
+
+Runtime variables:
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `PORT` | Host-provided | Port used by the Node server; defaults to `4173` locally. |
+| `HOST` | No | Bind address; defaults to `0.0.0.0` for cloud hosts. |
+| `OPENAI_API_KEY` | No | Enables server-side feedback enhancement only. |
+| `OPENAI_MODEL` | No | Server-side model ID; defaults to `gpt-5.6`. |
+
+The server never sends the API key to the browser. Missing credentials, timeouts, API errors, or invalid model output fall back to deterministic local feedback. Deployment is intentionally manual and is not triggered by CI.
+
+## Manual smoke-test checklist
+
+- [ ] Choose an avatar, child nickname, and custom companion name.
+- [ ] Complete the prototype grown-up gate and choose a reading level.
+- [ ] Enter Story Forest and try narration.
+- [ ] Open a vocabulary word and verify its meaning and pronunciation action.
+- [ ] Submit `The light was safe` and confirm that no Knowledge Gem is awarded.
+- [ ] Submit a complete retelling naming Lumi/the firefly, Nia’s helping action, and the safe/bright/restored outcome.
+- [ ] Confirm the evidence-backed Knowledge Gem appears.
+- [ ] Rate the story and inspect the grown-up learning report.
+- [ ] Check a narrow mobile viewport for horizontal overflow.
+- [ ] Check `/health` and confirm no client-side secret is present.
+
 ## Project references
 
 - [Approved product experience](docs/product-experience.md)
