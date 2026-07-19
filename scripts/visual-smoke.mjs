@@ -124,7 +124,48 @@ try {
   await mobilePage.screenshot({ path: join(outputDir, 'design-system-laboratory-mobile.png'), fullPage: true });
   await mobile.close();
 
-  console.log(`Visual journey passed: live prototype regression plus design-system rendering, keyboard focus, modal focus trap, Escape/return focus, reduced motion, and mobile overflow. Screenshots: ${outputDir}`);
+  for (const viewport of [
+    { name: 'compact-320', width: 320, height: 740 },
+    { name: 'mobile-375', width: 375, height: 812 },
+    { name: 'tablet-768', width: 768, height: 1024 }
+  ]) {
+    const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
+    const onboarding = await context.newPage();
+    await onboarding.goto('http://127.0.0.1:4192/', { waitUntil: 'networkidle' });
+    await onboarding.screenshot({ path: join(outputDir, `onboarding-welcome-${viewport.name}.png`), fullPage: true });
+    await onboarding.getByRole('button', { name: /begin my adventure/i }).click();
+    await onboarding.screenshot({ path: join(outputDir, `onboarding-companion-${viewport.name}.png`), fullPage: true });
+    const horizontalOverflow = await onboarding.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    if (horizontalOverflow) throw new Error(`Onboarding overflow at ${viewport.width}px.`);
+    await context.close();
+  }
+
+  const keyboard = await browser.newContext({ viewport: { width: 768, height: 1024 }, reducedMotion: 'reduce' });
+  const keyboardPage = await keyboard.newPage();
+  await keyboardPage.goto('http://127.0.0.1:4192/', { waitUntil: 'networkidle' });
+  const begin = keyboardPage.getByRole('button', { name: /begin my adventure/i });
+  await begin.focus();
+  await begin.press('Enter');
+  await keyboardPage.getByLabel(/what should we call you/i).focus();
+  await keyboardPage.keyboard.type('Timi');
+  await keyboardPage.getByLabel('Name your companion').focus();
+  await keyboardPage.keyboard.press('Control+A');
+  await keyboardPage.keyboard.type('Lumi');
+  await keyboardPage.getByRole('button', { name: /meet my companion/i }).focus();
+  await keyboardPage.keyboard.press('Enter');
+  if (!await keyboardPage.locator('[data-screen="confirm"]').isVisible()) throw new Error('Keyboard-only onboarding did not reach the grown-up gate.');
+  await keyboard.close();
+
+  const zoomed = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
+  const zoomedPage = await zoomed.newPage();
+  await zoomedPage.goto('http://127.0.0.1:4192/', { waitUntil: 'networkidle' });
+  await zoomedPage.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  const zoomOverflow = await zoomedPage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  if (zoomOverflow) throw new Error('Welcome screen has horizontal overflow at 200% text size.');
+  await zoomedPage.screenshot({ path: join(outputDir, 'onboarding-welcome-200-percent-text.png'), fullPage: true });
+  await zoomed.close();
+
+  console.log(`Visual journey passed: live prototype regression, onboarding at 320/375/768/desktop, keyboard journey, 200% text, design-system rendering, modal focus, reduced motion, and overflow checks. Screenshots: ${outputDir}`);
 } finally {
   await browser?.close();
   server.kill();
