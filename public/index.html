@@ -24,49 +24,59 @@
     </header>
 
     <main id="main" tabindex="-1">
-      <section class="screen active hero-screen" data-screen="welcome" aria-labelledby="welcome-title" tabindex="-1">
-        <div class="hero-copy">
-          <p class="eyebrow">A LIVING READING MISSION</p>
-          <h1 id="welcome-title">Every story becomes a world <em>you help bring to life.</em></h1>
-          <p class="lead">Read aloud, explore tricky words, share what you understood, and collect Knowledge Gems that show what you truly learned.</p>
-          <div class="button-row"><button class="primary-button" data-go="setup">Begin my adventure <span aria-hidden="true">→</span></button><button class="text-button" data-go="report">Grown-up preview</button></div>
-          <p class="trust-line"><span aria-hidden="true">🛡</span> Private by design • No ads • No public profiles</p>
+      <section class="screen active hero-screen onboarding-screen welcome-screen" data-screen="welcome" aria-labelledby="welcome-title" tabindex="-1">
+        <div class="hero-copy onboarding-copy">
+          <p class="eyebrow onboarding-kicker"><span aria-hidden="true">✦</span> A LIVING READING MISSION</p>
+          <h1 id="welcome-title">Stories are waiting for <em>your light.</em></h1>
+          <p class="lead">Choose a companion, read at your pace, and bring each world to life by showing what you understood.</p>
+          <ul class="welcome-benefits" aria-label="What happens in a reading mission">
+            <li><span aria-hidden="true">🔊</span><span><b>Listen or read</b><small>Choose the support that feels right.</small></span></li>
+            <li><span aria-hidden="true">💬</span><span><b>Share your thinking</b><small>Use your own words—never a trick answer.</small></span></li>
+            <li><span aria-hidden="true">◆</span><span><b>Earn real evidence</b><small>Knowledge Gems show what you learned.</small></span></li>
+          </ul>
+          <div class="button-row onboarding-actions"><button class="primary-button" data-go="setup">Begin my adventure <span aria-hidden="true">→</span></button><button class="text-button" data-go="report">Grown-up preview</button></div>
+          <p class="trust-line"><span aria-hidden="true">🛡</span> Private by design <span aria-hidden="true">•</span> No ads <span aria-hidden="true">•</span> No public profiles</p>
         </div>
-        <div class="hero-world" aria-label="Animated Story Forest preview">
+        <div class="hero-world onboarding-world" aria-label="Story Forest at night, with a fox companion and a lantern waiting to glow">
           <div class="moon"></div><div class="hill hill-back"></div><div class="hill hill-front"></div>
           <div class="tree tree-one">♠</div><div class="tree tree-two">♠</div><div class="tree tree-three">♠</div>
           <div class="lantern">✦</div><div class="firefly f1">•</div><div class="firefly f2">•</div><div class="firefly f3">•</div>
           <div class="companion-orb" aria-hidden="true">🦊</div>
-          <p>The lantern is waiting for a thoughtful reader.</p>
+          <div class="world-invitation"><span aria-hidden="true">✦</span><p><b>Story Forest needs you</b><small>The lantern is waiting for a thoughtful reader.</small></p></div>
         </div>
       </section>
 
-      <section class="screen" data-screen="setup" aria-labelledby="setup-title" tabindex="-1">
-        <div class="panel narrow-panel">
-          <p class="step-label">FIRST-TIME SETUP • 1 OF 2</p>
-          <h2 id="setup-title">Choose your reading companion</h2>
-          <p>Your companion will explore, listen, and learn beside you.</p>
+      <section class="screen onboarding-screen setup-screen" data-screen="setup" aria-labelledby="setup-title" tabindex="-1">
+        <div class="onboarding-shell">
+          <div class="onboarding-progress" aria-label="Onboarding progress, step 1 of 2"><span class="is-current">1</span><i></i><span>2</span><small>YOU + YOUR COMPANION</small></div>
+          <div class="panel narrow-panel companion-setup-card">
+          <div class="setup-intro"><p class="step-label">FIRST-TIME SETUP • 1 OF 2</p><h2 id="setup-title">Who will explore with you?</h2><p>Pick a friendly guide, then give both of you names that feel just right.</p></div>
+          <div class="companion-preview" aria-live="polite"><span id="setupPreviewAvatar" aria-hidden="true">🦊</span><p><small>YOUR READING COMPANION</small><b id="setupPreviewName">Kiko</b><em>Ready to listen, wonder, and learn beside you.</em></p></div>
           <fieldset class="avatar-grid"><legend class="sr-only">Companion appearance</legend>
             <label><input type="radio" name="avatar" value="🦊" checked /><span>🦊<b>Fox</b></span></label>
             <label><input type="radio" name="avatar" value="🦉" /><span>🦉<b>Owl</b></span></label>
             <label><input type="radio" name="avatar" value="🐢" /><span>🐢<b>Turtle</b></span></label>
             <label><input type="radio" name="avatar" value="🐰" /><span>🐰<b>Rabbit</b></span></label>
           </fieldset>
-          <label class="field-label" for="childName">What should we call you? <small>Use a nickname, not your full name.</small></label>
+          <label class="field-label" for="childName">What should we call you? <small>Your reading nickname—not your full name.</small></label>
           <input id="childName" maxlength="18" autocomplete="off" placeholder="Your nickname" />
           <label class="field-label" for="companionName">Name your companion</label>
           <input id="companionName" maxlength="18" autocomplete="off" value="Kiko" />
           <p class="field-error" id="nameError" role="alert"></p>
-          <button class="primary-button full-button" id="saveCompanion">Meet my companion</button>
+          <button class="primary-button full-button" id="saveCompanion">Meet my companion <span aria-hidden="true">→</span></button>
+          <p class="local-note"><span aria-hidden="true">🛡</span> These choices stay in this browser for the prototype.</p>
+          </div>
         </div>
       </section>
 
-      <section class="screen" data-screen="confirm" aria-labelledby="confirm-title" tabindex="-1">
+      <section class="screen onboarding-screen confirm-screen" data-screen="confirm" aria-labelledby="confirm-title" tabindex="-1">
+        <div class="onboarding-shell">
+          <div class="onboarding-progress" aria-label="Onboarding progress, step 2 of 2"><span>✓</span><i class="is-complete"></i><span class="is-current">2</span><small>GROWN-UP CHECK</small></div>
         <div class="panel setup-panel confirmation-panel">
           <button class="back-button" id="backToSetup">← Correct these choices</button>
-          <p class="eyebrow">PROTOTYPE GROWN-UP GATE • 2 OF 2</p>
-          <h2 id="confirm-title">Grown-up, please confirm these choices</h2>
-          <p>This prototype gate asks an adult to review the child’s choices before the learning world opens.</p>
+          <p class="eyebrow gate-kicker"><span aria-hidden="true">🛡</span> PROTOTYPE GROWN-UP GATE • 2 OF 2</p>
+          <h2 id="confirm-title">A quick grown-up check</h2>
+          <p>Review the child’s choices and reading support before opening the learning world.</p>
           <div class="confirmation-summary" aria-label="Profile choices to review">
             <div><small>CHILD NICKNAME</small><b id="confirmChildName">Explorer</b></div>
             <div><small>COMPANION</small><b><span id="confirmAvatar">🦊</span> <span id="confirmCompanionName">Kiko</span></b></div>
@@ -83,7 +93,8 @@
           </div>
           <p class="gate-note">Name screening is a basic local check, not guaranteed moderation. Please review and correct the nickname or companion name if needed.</p>
           <label class="grown-up-check"><input id="grownUpGate" type="checkbox" /><span>I’m a grown-up and I have reviewed the nickname, companion, reading level, and narration choices.</span></label>
-          <button class="primary-button full-button" id="confirmProfile" disabled>Confirm & enter learning world</button>
+          <button class="primary-button full-button" id="confirmProfile" disabled>Confirm & enter learning world <span aria-hidden="true">→</span></button>
+        </div>
         </div>
       </section>
 

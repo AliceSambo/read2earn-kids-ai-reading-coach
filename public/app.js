@@ -1,3 +1,7 @@
+import { initializeDesignSystem } from './design/components.js';
+
+initializeDesignSystem();
+
 const state = {
   screen: 'welcome', childName: '', companionName: 'Kiko', avatar: '🦊', mode: 'together', page: 0,
   story: null, wordsExplored: new Set(), answer: '', feedback: null, rating: null, gems: 0,
@@ -57,6 +61,13 @@ function saveCompanion() {
   updateIdentity();
   renderConfirmation();
   showScreen('confirm');
+}
+
+function updateCompanionPreview() {
+  const avatar = $('input[name=avatar]:checked')?.value || state.avatar;
+  const name = cleanName($('#companionName').value, 'Kiko') || 'Your companion';
+  $('#setupPreviewAvatar').textContent = avatar;
+  $('#setupPreviewName').textContent = name;
 }
 
 function renderConfirmation() {
@@ -285,6 +296,9 @@ function bindEvents() {
   $('#grownUpGate').addEventListener('change', (event) => { $('#confirmProfile').disabled = !event.target.checked; });
   $('#confirmProfile').addEventListener('click', confirmProfile);
   $('#onboardingSpeechRate').addEventListener('input', (event) => { $('#onboardingSpeedOutput').textContent = `${Number(event.target.value).toFixed(1)}×`; });
+  $$('input[name=avatar]').forEach((input) => input.addEventListener('change', updateCompanionPreview));
+  $('#companionName').addEventListener('input', updateCompanionPreview);
+  updateCompanionPreview();
   $$('[data-mode]').forEach((button) => button.addEventListener('click', () => selectMode(button.dataset.mode)));
   $('#nextPage').addEventListener('click', nextPage);
   $('#narrateButton').addEventListener('click', speakCurrentPart);
