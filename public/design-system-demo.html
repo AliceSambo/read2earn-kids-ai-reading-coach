@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Read2Earn Kids Design System Laboratory</title>
+  <link rel="stylesheet" href="/design/design-system.css">
+</head>
+<body>
+  <main class="r2e-lab">
+    <header class="r2e-lab__intro">
+      <p>Internal component laboratory</p>
+      <h1>Read2Earn Kids design system</h1>
+      <p>Reusable, child-safe components shown outside the production journey. Nothing on this page creates an account, profile, message, payment, or learning award.</p>
+    </header>
+    <section class="r2e-lab__section" aria-labelledby="buttons-title"><h2 id="buttons-title">Buttons</h2><div id="buttonDemo" class="r2e-lab__row"></div></section>
+    <section class="r2e-lab__section" aria-labelledby="cards-title"><h2 id="cards-title">Cards</h2><div id="cardDemo" class="r2e-lab__grid"></div></section>
+    <section class="r2e-lab__section" aria-labelledby="dialogs-title"><h2 id="dialogs-title">Dialogs</h2><div id="dialogDemo" class="r2e-lab__row"></div></section>
+    <section class="r2e-lab__section" aria-labelledby="companions-title"><h2 id="companions-title">Companion states</h2><div id="companionDemo" class="r2e-lab__grid"></div></section>
+  </main>
+  <script type="module">
+    import { initializeDesignSystem, PrimaryButton, SecondaryButton, RewardButton, NavigationButton, BookCard, MissionCard, AchievementCard, LearningReportCard, ConfirmationDialog, HelpDialog, RewardDialog, CompanionAvatar, CompanionSpeechBubble, companionEmotionStates } from '/design/components.js';
+    initializeDesignSystem();
+    const buttons = [PrimaryButton({label:'Begin mission'}), SecondaryButton({label:'Hear instructions'}), RewardButton({label:'See learning evidence'}), NavigationButton({label:'Back to map'}), PrimaryButton({label:'Unavailable action', disabled:true})];
+    buttonDemo.append(...buttons);
+    cardDemo.append(
+      BookCard({title:'The Lantern in Story Forest', description:'A story about patience and helping.', status:'Free sample'}),
+      MissionCard({title:'Restore the forest path', description:'Read, explain what changed, and see the world respond.', status:'Available'}),
+      AchievementCard({title:'Comprehension Gem', description:'Evidence: named who needed help, Nia’s action, and the safe outcome.', status:'Demonstrated'}),
+      LearningReportCard({title:'Grown-up learning report', description:'Observed: a complete meaningful retelling.', status:'Next: discuss what patience means.'})
+    );
+    const dialogs = [
+      [ConfirmationDialog({title:'Prototype grown-up confirmation', body:'Review the child’s private choices before entering the learning world.'}), 'Open confirmation'],
+      [HelpDialog({title:'One helpful clue', body:'Look for who needed Nia’s help.'}), 'Open help'],
+      [RewardDialog({title:'Comprehension demonstrated', body:'The Knowledge Gem follows evidence; it is not awarded for page completion.'}), 'Open reward']
+    ];
+    for (const [instance, label] of dialogs) { document.body.append(instance.element); const trigger=SecondaryButton({label,onActivate:()=>instance.open(trigger)}); dialogDemo.append(trigger); }
+    for (const state of companionEmotionStates) { const group=document.createElement('div'); group.className='r2e-card'; group.append(CompanionAvatar({name:'A child-named companion', emotion:state}), CompanionSpeechBubble({companionName:'Companion', message:`I am ${state}. I support learning and never replace a grown-up.`})); companionDemo.append(group); }
+  </script>
+</body>
+</html>

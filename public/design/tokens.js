@@ -1,123 +1,84 @@
 /**
- * Read2Earn Kids design tokens.
+ * Read2Earn Kids semantic design tokens.
  *
- * Architecture only: the current prototype does not import this module yet.
- * Components should consume semantic roles rather than hard-coded values.
+ * The live prototype does not import this module yet. The component laboratory
+ * consumes it in isolation so future screen migrations stay reversible.
  */
 
-export const designTokens = Object.freeze({
-  color: Object.freeze({
-    brand: Object.freeze({
-      journeyViolet: '#5B4BDB',
-      journeyVioletDark: '#4032AF',
-      discoveryBlue: '#2F79C8',
-      canopyTeal: '#25877F',
-      companionCoral: '#E76F51'
-    }),
-    text: Object.freeze({
-      primary: '#24203B',
-      secondary: '#59556B',
-      inverse: '#FFFFFF',
-      link: '#286FAE'
-    }),
-    surface: Object.freeze({
-      page: '#FCFBFF',
-      raised: '#FFFFFF',
-      lavenderMist: '#F1EFFF',
-      warmParchment: '#FFF8E8',
-      adultCanvas: '#F5F7FA',
-      border: '#D9D6E5'
-    }),
-    state: Object.freeze({
-      success: '#237A52',
-      learningReward: '#D39A16',
-      warning: '#A15F00',
-      error: '#B5415A',
-      information: '#286FAE',
-      focus: '#1463D6'
-    })
+const freeze = (value) => Object.freeze(value);
+
+export const designTokens = freeze({
+  color: freeze({
+    brand: freeze({ primary: '#5B4BDB', primaryStrong: '#4032AF', secondary: '#25877F', accent: '#E76F51' }),
+    background: freeze({ page: '#FCFBFF', surface: '#FFFFFF', story: '#FFF8E8', childTint: '#F1EFFF', adult: '#F5F7FA' }),
+    text: freeze({ primary: '#24203B', secondary: '#59556B', inverse: '#FFFFFF', link: '#205F99' }),
+    state: freeze({ success: '#237A52', reward: '#8A5A00', warning: '#8A4F00', error: '#A62F49', information: '#205F99' }),
+    border: freeze({ default: '#C8C3D8', strong: '#716B82', focus: '#005FCC' }),
+    contrast: freeze({ onPrimary: '#FFFFFF', onReward: '#24203B', disabledText: '#575364', disabledSurface: '#E2DFE9' })
   }),
-  spacing: Object.freeze({
-    0: '0',
-    1: '0.25rem',
-    2: '0.5rem',
-    3: '0.75rem',
-    4: '1rem',
-    5: '1.25rem',
-    6: '1.5rem',
-    8: '2rem',
-    10: '2.5rem',
-    12: '3rem',
-    16: '4rem'
-  }),
-  radius: Object.freeze({
-    control: '0.875rem',
-    cardAdult: '1rem',
-    cardChild: '1.5rem',
-    dialog: '1.75rem',
-    round: '999px'
-  }),
-  typography: Object.freeze({
-    family: Object.freeze({
+  typography: freeze({
+    family: freeze({
       display: '"Nunito Sans", system-ui, "Segoe UI", sans-serif',
       reading: '"Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif',
       ui: '"Nunito Sans", system-ui, "Segoe UI", sans-serif'
     }),
-    size: Object.freeze({
-      label: '0.875rem',
-      body: '1rem',
-      bodyChild: '1.125rem',
-      reading: '1.25rem',
-      title: 'clamp(1.75rem, 4vw, 2.75rem)',
-      display: 'clamp(2.25rem, 7vw, 4.5rem)'
+    role: freeze({
+      display: freeze({ size: 'clamp(2.25rem, 7vw, 4.5rem)', lineHeight: 1.12, weight: 800 }),
+      reading: freeze({ size: 'clamp(1.125rem, 2vw, 1.25rem)', lineHeight: 1.65, weight: 400 }),
+      ui: freeze({ size: '1rem', lineHeight: 1.5, weight: 600 }),
+      button: freeze({ size: '1rem', lineHeight: 1.25, weight: 700 }),
+      parentDashboard: freeze({ size: '1rem', lineHeight: 1.55, weight: 400 })
     }),
-    lineHeight: Object.freeze({
-      compact: 1.2,
-      ui: 1.4,
-      body: 1.55,
-      reading: 1.65
-    }),
-    weight: Object.freeze({
-      regular: 400,
-      medium: 600,
-      bold: 700,
-      extraBold: 800
-    })
+    measure: freeze({ reading: '45rem', parent: '70ch' })
   }),
-  motion: Object.freeze({
-    duration: Object.freeze({
-      instant: '100ms',
-      component: '180ms',
-      screen: '280ms',
-      storyTransform: '650ms'
-    }),
-    easing: Object.freeze({
-      enter: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-      exit: 'cubic-bezier(0.4, 0, 1, 1)',
-      standard: 'cubic-bezier(0.4, 0, 0.2, 1)'
-    }),
-    reduced: Object.freeze({
-      duration: '0ms',
-      transform: 'none'
-    })
+  spacing: freeze({ small: '0.5rem', medium: '1rem', large: '1.5rem', extraLarge: '2.5rem' }),
+  radius: freeze({ control: '0.875rem', card: '1.5rem', adultCard: '1rem', dialog: '1.75rem', round: '999px' }),
+  motion: freeze({
+    duration: freeze({ fast: '100ms', standard: '200ms', reward: '650ms', reduced: '1ms' }),
+    easing: freeze({ standard: 'cubic-bezier(0.4, 0, 0.2, 1)', enter: 'cubic-bezier(0.2, 0.8, 0.2, 1)' }),
+    reduced: freeze({ transform: 'none', iterationCount: 1 })
   }),
-  size: Object.freeze({
-    touchTargetMinimum: '3rem',
-    readingMeasure: '45rem',
-    contentMeasure: '70rem'
-  }),
-  elevation: Object.freeze({
-    card: '0 0.5rem 1.5rem rgb(36 32 59 / 0.08)',
-    dialog: '0 1.5rem 4rem rgb(36 32 59 / 0.16)',
-    focusRing: '0 0 0 0.25rem rgb(20 99 214 / 0.3)'
-  }),
-  layer: Object.freeze({
-    base: 0,
-    navigation: 10,
-    overlay: 100,
-    dialog: 110,
-    status: 120
-  })
+  size: freeze({ touchTargetMinimum: '3rem', contentMaximum: '70rem' }),
+  elevation: freeze({ card: '0 0.5rem 1.5rem rgb(36 32 59 / 0.09)', dialog: '0 1.5rem 4rem rgb(36 32 59 / 0.18)' }),
+  layer: freeze({ base: 0, navigation: 10, overlay: 100, dialog: 110, status: 120 })
 });
+
+export const cssTokenMap = freeze({
+  '--r2e-brand-primary': designTokens.color.brand.primary,
+  '--r2e-brand-primary-strong': designTokens.color.brand.primaryStrong,
+  '--r2e-brand-secondary': designTokens.color.brand.secondary,
+  '--r2e-brand-accent': designTokens.color.brand.accent,
+  '--r2e-page': designTokens.color.background.page,
+  '--r2e-surface': designTokens.color.background.surface,
+  '--r2e-story': designTokens.color.background.story,
+  '--r2e-child-tint': designTokens.color.background.childTint,
+  '--r2e-adult-canvas': designTokens.color.background.adult,
+  '--r2e-text': designTokens.color.text.primary,
+  '--r2e-text-muted': designTokens.color.text.secondary,
+  '--r2e-text-inverse': designTokens.color.text.inverse,
+  '--r2e-success': designTokens.color.state.success,
+  '--r2e-reward': designTokens.color.state.reward,
+  '--r2e-warning': designTokens.color.state.warning,
+  '--r2e-error': designTokens.color.state.error,
+  '--r2e-focus': designTokens.color.border.focus,
+  '--r2e-border': designTokens.color.border.default,
+  '--r2e-space-s': designTokens.spacing.small,
+  '--r2e-space-m': designTokens.spacing.medium,
+  '--r2e-space-l': designTokens.spacing.large,
+  '--r2e-space-xl': designTokens.spacing.extraLarge,
+  '--r2e-radius-control': designTokens.radius.control,
+  '--r2e-radius-card': designTokens.radius.card,
+  '--r2e-motion-fast': designTokens.motion.duration.fast,
+  '--r2e-motion-standard': designTokens.motion.duration.standard,
+  '--r2e-motion-reward': designTokens.motion.duration.reward,
+  '--r2e-font-display': designTokens.typography.family.display,
+  '--r2e-font-reading': designTokens.typography.family.reading,
+  '--r2e-font-ui': designTokens.typography.family.ui
+});
+
+export function applyDesignTokens(root = document.documentElement) {
+  for (const [name, value] of Object.entries(cssTokenMap)) root.style.setProperty(name, value);
+  return root;
+}
 
 export default designTokens;

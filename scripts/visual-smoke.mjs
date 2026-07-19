@@ -5,9 +5,13 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 const modules = process.env.BROWSER_AUTOMATION_NODE_MODULES;
-if (!modules) throw new Error('Set BROWSER_AUTOMATION_NODE_MODULES to a node_modules directory containing Playwright.');
-const requireFromBundle = createRequire(join(modules, 'package.json'));
-const { chromium } = requireFromBundle('playwright');
+const requireBrowser = modules ? createRequire(join(modules, 'package.json')) : createRequire(import.meta.url);
+let chromium;
+try {
+  ({ chromium } = requireBrowser('playwright-core'));
+} catch {
+  ({ chromium } = requireBrowser('playwright'));
+}
 const outputDir = resolve(process.env.QA_OUTPUT_DIR || join(tmpdir(), 'read2earn-qa'));
 await mkdir(outputDir, { recursive: true });
 
@@ -80,15 +84,47 @@ try {
   await page.screenshot({ path: join(outputDir, 'read2earn-report-desktop.png'), fullPage: true });
   await desktop.close();
 
+  const lab = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
+  const labPage = await lab.newPage();
+  await labPage.goto('http://127.0.0.1:4192/design-system-demo.html', { waitUntil: 'networkidle' });
+  if (await labPage.locator('.r2e-button').count() < 8) throw new Error('Design laboratory did not render the reusable buttons and dialog triggers.');
+  if (await labPage.locator('.r2e-card').count() < 9) throw new Error('Design laboratory did not render card and companion patterns.');
+  const primary = labPage.getByRole('button', { name: 'Begin mission' });
+  await primary.focus();
+  if (!await primary.evaluate((node) => node.matches(':focus-visible'))) throw new Error('Primary button lacks keyboard-visible focus.');
+  const confirmationTrigger = labPage.getByRole('button', { name: 'Open confirmation' });
+  await confirmationTrigger.focus();
+  await confirmationTrigger.press('Enter');
+  const openDialog = labPage.getByRole('dialog', { name: 'Prototype grown-up confirmation' });
+  await openDialog.waitFor();
+  const closeDialog = openDialog.getByRole('button', { name: 'Close' });
+  const continueDialog = openDialog.getByRole('button', { name: 'Continue' });
+  if (!await closeDialog.evaluate((node) => node === document.activeElement)) throw new Error('Dialog did not move focus to its first safe action.');
+  await closeDialog.press('Shift+Tab');
+  if (!await continueDialog.evaluate((node) => node === document.activeElement)) throw new Error('Dialog did not wrap backward focus.');
+  await continueDialog.press('Tab');
+  if (!await closeDialog.evaluate((node) => node === document.activeElement)) throw new Error('Dialog did not trap forward focus.');
+  await labPage.keyboard.press('Escape');
+  if (await openDialog.isVisible()) throw new Error('Escape did not close the dialog.');
+  if (!await confirmationTrigger.evaluate((node) => node === document.activeElement)) throw new Error('Dialog did not return focus to its trigger.');
+  const celebrationDuration = await labPage.locator('.r2e-companion--celebrating').evaluate((node) => getComputedStyle(node).animationDuration);
+  if (!['0s','0.001s'].includes(celebrationDuration)) throw new Error(`Reduced motion did not minimise celebration: ${celebrationDuration}`);
+  await labPage.screenshot({ path: join(outputDir, 'design-system-laboratory-desktop.png'), fullPage: true });
+  await lab.close();
+
   const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const mobilePage = await mobile.newPage();
   await mobilePage.goto('http://127.0.0.1:4192/', { waitUntil: 'networkidle' });
   const overflow = await mobilePage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   if (overflow) throw new Error('Mobile layout has horizontal overflow.');
   await mobilePage.screenshot({ path: join(outputDir, 'read2earn-welcome-mobile.png'), fullPage: true });
+  await mobilePage.goto('http://127.0.0.1:4192/design-system-demo.html', { waitUntil: 'networkidle' });
+  const labOverflow = await mobilePage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  if (labOverflow) throw new Error('Design-system laboratory has horizontal overflow on mobile.');
+  await mobilePage.screenshot({ path: join(outputDir, 'design-system-laboratory-mobile.png'), fullPage: true });
   await mobile.close();
 
-  console.log(`Visual journey passed: grown-up gate, reading level, speech fallback, custom naming, story navigation, vocabulary, strict comprehension, Knowledge Gem, parent report, and mobile overflow. Screenshots: ${outputDir}`);
+  console.log(`Visual journey passed: live prototype regression plus design-system rendering, keyboard focus, modal focus trap, Escape/return focus, reduced motion, and mobile overflow. Screenshots: ${outputDir}`);
 } finally {
   await browser?.close();
   server.kill();

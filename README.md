@@ -41,7 +41,27 @@ npm test
 
 The validation checks JavaScript syntax, required project files and screens, the grown-up gate, reading-level persistence, speech fallback, secret boundaries, story data, static serving, and the three-category deterministic comprehension fallback.
 
+For the browser journey and design-system laboratory, install the development-only browser driver and run:
+
+```bash
+npm ci
+npm run test:visual
+```
+
+The visual runner uses the installed Chrome browser. It covers the complete prototype regression plus component rendering, keyboard-visible buttons, modal focus trapping, Escape and focus restoration, reduced motion, and mobile overflow. `playwright-core` is test tooling only and is not loaded by the application.
+
 GitHub Actions runs `npm test` and `git diff --check` with Node.js 20 for every push and pull request targeting `main`. No GitHub Actions secret is required: CI deliberately exercises the deterministic fallback-only demo.
+
+## Design system
+
+The isolated [design-system laboratory](public/design-system-demo.html) turns the approved visual foundations into reusable implementation primitives without changing the live learning journey.
+
+- `public/design/tokens.js` defines semantic color, typography, spacing, motion, size, and contrast roles. Components consume roles rather than introducing one-off values.
+- `public/design/components.js` exports accessible button, card, dialog, and companion factories. New components must use native semantics, visible labels, 48px child touch targets, managed focus, and safe text insertion.
+- `public/design/design-system.css` provides the laboratory presentation and reduced-motion/responsive behavior.
+- `docs/accessibility-ui-guidelines.md` and `docs/responsive-design-guidelines.md` define the evidence required before a component enters a production screen.
+
+To add a component, first document its purpose and states, reuse or extend semantic tokens, implement it in the isolated module, add it to the demo, and cover keyboard, screen-reader, reduced-motion, responsive, and child-safety behavior in automated and manual tests. The design system must never change comprehension scoring, Knowledge Gem authority, privacy boundaries, or account/data behavior.
 
 ## Deployment preparation
 
