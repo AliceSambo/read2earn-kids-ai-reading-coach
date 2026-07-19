@@ -47,3 +47,5 @@ credentials/
 
 # Local tool caches
 .appdata/
+.npm-cache/
+node_modules/
