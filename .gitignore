@@ -44,3 +44,6 @@ coverage/
 # OpenAI and service secrets
 secrets/
 credentials/
+
+# Local tool caches
+.appdata/

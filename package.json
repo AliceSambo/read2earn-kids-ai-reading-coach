@@ -1,0 +1,14 @@
+{
+  "name": "read2earn-kids-ai-reading-coach",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A child-safe Living Reading Mission prototype.",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check public/app.js",
+    "test": "npm run check && node scripts/check-foundation.mjs",
+    "test:visual": "node scripts/visual-smoke.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

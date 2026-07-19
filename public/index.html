@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4936c7" />
+    <meta name="description" content="Read2Earn Kids Living Reading Mission prototype" />
+    <title>Read2Earn Kids — Living Reading Mission</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <header class="topbar">
+      <button class="brand" data-go="map" aria-label="Read2Earn Kids home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span><strong>Read2Earn</strong><small>Kids</small></span>
+      </button>
+      <div class="top-actions">
+        <div class="gem-count" aria-label="Knowledge Gems earned"><span aria-hidden="true">◆</span><b id="gemCount">0</b><span class="desktop-only">Knowledge Gems</span></div>
+        <button class="icon-button" id="settingsButton" aria-haspopup="dialog" aria-label="Open comfort settings">⚙</button>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="screen active hero-screen" data-screen="welcome" aria-labelledby="welcome-title" tabindex="-1">
+        <div class="hero-copy">
+          <p class="eyebrow">A LIVING READING MISSION</p>
+          <h1 id="welcome-title">Every story becomes a world <em>you help bring to life.</em></h1>
+          <p class="lead">Read aloud, explore tricky words, share what you understood, and collect Knowledge Gems that show what you truly learned.</p>
+          <div class="button-row"><button class="primary-button" data-go="setup">Begin my adventure <span aria-hidden="true">→</span></button><button class="text-button" data-go="report">Grown-up preview</button></div>
+          <p class="trust-line"><span aria-hidden="true">🛡</span> Private by design • No ads • No public profiles</p>
+        </div>
+        <div class="hero-world" aria-label="Animated Story Forest preview">
+          <div class="moon"></div><div class="hill hill-back"></div><div class="hill hill-front"></div>
+          <div class="tree tree-one">♠</div><div class="tree tree-two">♠</div><div class="tree tree-three">♠</div>
+          <div class="lantern">✦</div><div class="firefly f1">•</div><div class="firefly f2">•</div><div class="firefly f3">•</div>
+          <div class="companion-orb" aria-hidden="true">🦊</div>
+          <p>The lantern is waiting for a thoughtful reader.</p>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="setup" aria-labelledby="setup-title" tabindex="-1">
+        <div class="panel narrow-panel">
+          <p class="step-label">FIRST-TIME SETUP • 1 OF 2</p>
+          <h2 id="setup-title">Choose your reading companion</h2>
+          <p>Your companion will explore, listen, and learn beside you.</p>
+          <fieldset class="avatar-grid"><legend class="sr-only">Companion appearance</legend>
+            <label><input type="radio" name="avatar" value="🦊" checked /><span>🦊<b>Fox</b></span></label>
+            <label><input type="radio" name="avatar" value="🦉" /><span>🦉<b>Owl</b></span></label>
+            <label><input type="radio" name="avatar" value="🐢" /><span>🐢<b>Turtle</b></span></label>
+            <label><input type="radio" name="avatar" value="🐰" /><span>🐰<b>Rabbit</b></span></label>
+          </fieldset>
+          <label class="field-label" for="childName">What should we call you? <small>Use a nickname, not your full name.</small></label>
+          <input id="childName" maxlength="18" autocomplete="off" placeholder="Your nickname" />
+          <label class="field-label" for="companionName">Name your companion</label>
+          <input id="companionName" maxlength="18" autocomplete="off" value="Kiko" />
+          <p class="field-error" id="nameError" role="alert"></p>
+          <button class="primary-button full-button" id="saveCompanion">Meet my companion</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="confirm" aria-labelledby="confirm-title" tabindex="-1">
+        <div class="panel setup-panel confirmation-panel">
+          <button class="back-button" id="backToSetup">← Correct these choices</button>
+          <p class="eyebrow">PROTOTYPE GROWN-UP GATE • 2 OF 2</p>
+          <h2 id="confirm-title">Grown-up, please confirm these choices</h2>
+          <p>This prototype gate asks an adult to review the child’s choices before the learning world opens.</p>
+          <div class="confirmation-summary" aria-label="Profile choices to review">
+            <div><small>CHILD NICKNAME</small><b id="confirmChildName">Explorer</b></div>
+            <div><small>COMPANION</small><b><span id="confirmAvatar">🦊</span> <span id="confirmCompanionName">Kiko</span></b></div>
+          </div>
+          <fieldset class="reading-levels">
+            <legend>Choose a reading level <small>No birth date is collected.</small></legend>
+            <label><input type="radio" name="readingLevel" value="emerging" checked /><span><b>Emerging Reader</b><small>Learning sounds, words, and short sentences.</small></span></label>
+            <label><input type="radio" name="readingLevel" value="growing" /><span><b>Growing Reader</b><small>Reading short stories with occasional support.</small></span></label>
+            <label><input type="radio" name="readingLevel" value="confident" /><span><b>Confident Reader</b><small>Reading independently and discussing ideas.</small></span></label>
+          </fieldset>
+          <div class="confirmation-preferences">
+            <label class="setting-row"><span><b>Quiet mode</b><small>Turns off spoken narration.</small></span><input id="onboardingQuietMode" type="checkbox" role="switch" /></label>
+            <label class="setting-range" for="onboardingSpeechRate"><span><b>Narration speed</b><output id="onboardingSpeedOutput">0.9×</output></span><input id="onboardingSpeechRate" type="range" min="0.6" max="1.2" step="0.1" value="0.9" /></label>
+          </div>
+          <p class="gate-note">Name screening is a basic local check, not guaranteed moderation. Please review and correct the nickname or companion name if needed.</p>
+          <label class="grown-up-check"><input id="grownUpGate" type="checkbox" /><span>I’m a grown-up and I have reviewed the nickname, companion, reading level, and narration choices.</span></label>
+          <button class="primary-button full-button" id="confirmProfile" disabled>Confirm & enter learning world</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="map" aria-labelledby="map-title" tabindex="-1">
+        <div class="section-heading"><div><p class="eyebrow">YOUR LEARNING WORLD</p><h2 id="map-title">Where will we explore today?</h2><p id="mapGreeting">Every path holds something new to discover.</p></div><button class="adult-link" data-go="report">Grown-up report <span aria-hidden="true">↗</span></button></div>
+        <div class="world-map">
+          <button class="world-card story-world" data-go="mission"><span class="world-icon">🌲</span><span><b>Story Forest</b><small>1 mission ready</small></span><i>Start here →</i></button>
+          <button class="world-card ocean-world" disabled><span class="world-icon">🐋</span><span><b>Discovery Ocean</b><small>Coming soon</small></span></button>
+          <button class="world-card number-world" disabled><span class="world-icon">🏰</span><span><b>Number Kingdom</b><small>Coming soon</small></span></button>
+          <button class="world-card language-world" disabled><span class="world-icon">🪁</span><span><b>Language Village</b><small>Coming soon</small></span></button>
+          <button class="world-card garden-world" disabled><span class="world-icon">🌻</span><span><b>Character Garden</b><small>Coming soon</small></span></button>
+          <button class="world-card school-world" disabled><span class="world-icon">🏫</span><span><b>School Island</b><small>Future school space</small></span></button>
+        </div>
+        <div class="companion-message"><span id="mapAvatar">🦊</span><p><b id="mapCompanion">Kiko</b> says: “Story Forest’s lantern has gone dark. I think your reading power can help!”</p></div>
+      </section>
+
+      <section class="screen" data-screen="mission" aria-labelledby="mission-title" tabindex="-1">
+        <button class="back-button" data-go="map">← Learning world</button>
+        <div class="mission-layout">
+          <article class="mission-card"><p class="eyebrow">STORY FOREST • MISSION 01</p><h2 id="mission-title">The Lantern in Story Forest</h2><p>A tiny firefly needs help before night covers the forest.</p><ul><li>⏱ About 6 minutes</li><li>◆ Comprehension Gem</li><li>🔊 Voice support</li></ul><div class="mission-scene"><span>🌲</span><span class="mission-lantern">🏮</span><span>🌲</span></div></article>
+          <div class="mode-panel"><h3>How would you like to read?</h3><button class="mode-card" data-mode="self"><span>📖</span><span><b>Read by myself</b><small>I’ll ask for help when I need it.</small></span></button><button class="mode-card featured" data-mode="together"><span id="modeAvatar">🦊</span><span><b>Read with my companion</b><small>We’ll pause and explore words together.</small></span><i>Recommended</i></button><button class="mode-card" data-mode="listen"><span>🎧</span><span><b>Listen and follow</b><small>Hear each part while the words glow.</small></span></button></div>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="reader" aria-labelledby="reader-title" tabindex="-1">
+        <div class="reader-top"><button class="back-button" data-go="mission">← Reading modes</button><span id="readingModeLabel">Read with my companion</span><span>Part <b id="pageNumber">1</b> of 4</span></div>
+        <div class="reader-layout">
+          <aside class="story-rail"><div class="mini-world"><span id="readerAvatar">🦊</span><div class="mini-lantern">✦</div></div><div class="progress-track"><i id="storyProgress"></i></div><p id="readerEncouragement">Kiko is exploring with you.</p></aside>
+          <article class="reading-page"><p class="eyebrow">THE LANTERN IN STORY FOREST</p><h2 id="reader-title">A light between the trees</h2><p class="story-text" id="storyText"></p><div class="word-help" id="wordHelp" hidden><button class="close-help" aria-label="Close word help">×</button><p class="eyebrow">WORD DISCOVERY</p><h3 id="helpWord"></h3><p id="helpSyllables"></p><p id="helpMeaning"></p><button class="secondary-button" id="sayWord">🔊 Hear this word</button></div><div class="reader-controls"><button class="secondary-button" id="narrateButton">🔊 Read this part</button><button class="primary-button" id="nextPage">Next part →</button></div><p class="reader-hint">Tip: select a glowing word to discover what it means.</p></article>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="comprehension" aria-labelledby="question-title" tabindex="-1">
+        <div class="panel comprehension-panel"><div class="companion-large" id="questionAvatar">🦊</div><p class="eyebrow">SHOW WHAT YOU UNDERSTOOD</p><h2 id="question-title">Tell me what happened in the forest.</h2><p>Who needed help, what did Nia do, and what changed? Use your own words—there is more than one good way to answer.</p><div class="answer-tabs" aria-label="Choose how to answer"><button class="active" id="typeTab" aria-pressed="true">⌨ Type my answer</button><button id="voiceTab" aria-pressed="false">🎙 Say my answer</button></div><textarea id="answerText" rows="5" maxlength="500" placeholder="I think Nia helped..."></textarea><div class="voice-box" id="voiceBox" hidden><button class="record-button" id="recordButton"><span>🎙</span>Start speaking</button><p id="voiceStatus">Your words will appear in the answer box. You can edit them before sending.</p></div><p class="field-error" id="answerError" role="alert"></p><button class="primary-button full-button" id="checkAnswer">Share with my companion</button><div class="feedback-card" id="feedbackCard" hidden aria-live="polite"><h3 id="feedbackTitle"></h3><p id="feedbackMessage"></p><p><b id="promptLabel">Think a little deeper:</b> <span id="nextPrompt"></span></p><button class="primary-button" id="continueToReward">Continue mission →</button></div></div>
+      </section>
+
+      <section class="screen" data-screen="reward" aria-labelledby="reward-title" tabindex="-1">
+        <div class="reward-world"><div class="reward-rays"></div><div class="big-gem">◆</div><div class="lit-lantern">🏮</div></div>
+        <div class="reward-copy"><p class="eyebrow">MISSION COMPLETE</p><h2 id="reward-title">You brought light back to Story Forest!</h2><p id="rewardMessage">Your answer showed how patient help made the forest safer.</p><div class="gem-card"><span>◆</span><div><small>KNOWLEDGE GEM EARNED</small><h3>Comprehension Gem</h3><p id="gemEvidence">Evidence: you identified the character, helping action, and story outcome.</p></div></div><fieldset class="rating"><legend>How much did you enjoy this story?</legend><div><label><input type="radio" name="rating" value="2" /><span>😕<small>Not much</small></span></label><label><input type="radio" name="rating" value="4" /><span>🙂<small>A little</small></span></label><label><input type="radio" name="rating" value="6" /><span>😊<small>Good</small></span></label><label><input type="radio" name="rating" value="8" /><span>🤩<small>Great</small></span></label><label><input type="radio" name="rating" value="10" /><span>🥰<small>Loved it</small></span></label></div></fieldset><button class="primary-button" id="finishMission">Save mission & see report →</button></div>
+      </section>
+
+      <section class="screen" data-screen="report" aria-labelledby="report-title" tabindex="-1">
+        <div class="report-heading"><div><p class="eyebrow">GROWN-UP VIEW • ON-DEVICE DEMO</p><h2 id="report-title">A learning report with real evidence</h2><p>This prototype stores progress in this browser only. No child profile or reading audio is uploaded.</p></div><button class="secondary-button" id="printReport">🖨 Print report</button></div>
+        <div class="report-grid"><article class="report-summary"><div class="report-child"><span id="reportAvatar">🦊</span><div><small>READER NICKNAME</small><h3 id="reportName">Explorer</h3><p>Learning with <b id="reportCompanion">Kiko</b></p><p>Level: <b id="reportLevel">Emerging Reader</b></p></div></div><div class="report-stats"><div><b id="reportStories">0</b><span>Story completed</span></div><div><b id="reportGems">0</b><span>Knowledge Gem</span></div><div><b id="reportRating">—</b><span>Enjoyment / 10</span></div></div></article><article><p class="eyebrow">COMPREHENSION</p><h3 id="reportUnderstanding">Mission not completed yet</h3><p id="reportEvidence">Complete the Story Forest mission to create evidence of understanding.</p><span class="evidence-pill" id="evidencePill">Awaiting evidence</span></article><article><p class="eyebrow">WORDS EXPLORED</p><h3 id="reportWords">No words selected yet</h3><p>Vocabulary support is available through meanings, syllables, and spoken pronunciation.</p></article><article><p class="eyebrow">SUPPORT USED</p><h3 id="reportMode">Not selected yet</h3><p id="reportSupport">The child can choose independent, companion-supported, or listen-and-follow reading.</p></article><article class="next-step"><p class="eyebrow">TRY THIS TOGETHER NEXT</p><h3>Ask: “What does patience mean in your own words?”</h3><p>After the mission, invite your child to connect Nia’s choice to a time they helped someone calmly.</p></article></div><div class="button-row"><button class="primary-button" data-go="map">Return to learning world</button><button class="text-button" data-go="welcome">Restart demo</button></div>
+      </section>
+    </main>
+
+    <dialog id="settingsDialog"><form method="dialog"><div class="dialog-heading"><div><p class="eyebrow">COMFORT SETTINGS</p><h2>Make reading feel right</h2></div><button class="icon-button" value="cancel" aria-label="Close settings">×</button></div><label class="setting-row"><span><b>Quiet mode</b><small>Turns off spoken narration.</small></span><input id="quietMode" type="checkbox" role="switch" /></label><label class="setting-row"><span><b>Reduced motion</b><small>Stops decorative movement.</small></span><input id="reducedMotion" type="checkbox" role="switch" /></label><label class="setting-range" for="speechRate"><span><b>Narration speed</b><output id="speedOutput">0.9×</output></span><input id="speechRate" type="range" min="0.6" max="1.2" step="0.1" value="0.9" /></label><button class="primary-button full-button" value="default">Save settings</button></form></dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
