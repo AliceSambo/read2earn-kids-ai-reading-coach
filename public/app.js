@@ -100,6 +100,7 @@ function updateIdentity() {
   $('#mapGreeting').textContent = `Welcome, ${state.childName}. Every path holds something new to discover.`;
   ['#mapAvatar','#modeAvatar','#readerAvatar','#questionAvatar','#reportAvatar'].forEach((id) => $(id).textContent = state.avatar);
   $('#mapCompanion').textContent = state.companionName;
+  $('#worldGemCount').textContent = state.gems;
   $('#readerEncouragement').textContent = `${state.companionName} is exploring with you.`;
   $('#reportName').textContent = state.childName;
   $('#reportCompanion').textContent = state.companionName;
@@ -299,6 +300,15 @@ function bindEvents() {
   $$('input[name=avatar]').forEach((input) => input.addEventListener('change', updateCompanionPreview));
   $('#companionName').addEventListener('input', updateCompanionPreview);
   updateCompanionPreview();
+  $$('.world-card').forEach((card) => {
+    const describeWorld = () => {
+      $('#mapGuidance').textContent = `“${card.dataset.guidance}”`;
+      $$('.world-card').forEach((world) => world.classList.toggle('is-exploring', world === card));
+    };
+    card.addEventListener('focus', describeWorld);
+    card.addEventListener('mouseenter', describeWorld);
+    if (card.hasAttribute('data-locked')) card.addEventListener('click', () => toast(`${card.dataset.world} is coming in a future chapter.`));
+  });
   $$('[data-mode]').forEach((button) => button.addEventListener('click', () => selectMode(button.dataset.mode)));
   $('#nextPage').addEventListener('click', nextPage);
   $('#narrateButton').addEventListener('click', speakCurrentPart);
