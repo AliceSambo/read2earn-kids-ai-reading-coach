@@ -29,6 +29,16 @@ The child selects one of four companion appearances and provides a custom name d
 - Natural stopping points protect well-being.
 - The child interface is playful; the adult report is calm and evidence-first.
 
+## Interactive comprehension and Knowledge Gems
+
+The comprehension journey visualizes three distinct pieces of story evidence:
+
+1. **Who needed help** — Lumi or the firefly.
+2. **What Nia did** — patient, gentle, guiding, helping, or protective action.
+3. **What changed** — the path or forest became safe or bright, or the lantern was restored.
+
+The child can answer by typing or supported browser voice input. A warm evidence trail shows which ideas were demonstrated and invites another attempt when an idea is missing. Attempts are never scored, ranked, or described as failure. The Knowledge Gem remains inactive until all three categories are present, then assembles into a visible Comprehension Gem with human-readable evidence. Reduced-motion mode presents the same state change without decorative animation.
+
 ## Future platform, not prototype scope
 
 The longer roadmap includes public/free and premium books, school-controlled private libraries, verified students, teacher assignments, offline learning, multi-subject content, family challenges, parent-approved achievement cards, institution competitions, subscriptions, author tools, and parent-controlled non-transferable digital collectibles. These are documented direction, not unfinished prototype features.

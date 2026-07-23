@@ -31,6 +31,12 @@ for (const missionRequirement of ['story-mission-screen','mission-objectives','m
 for (const clientRequirement of ['chapterTitles','sceneMoments',"dataset.moment = String(state.page + 1)"]) {
   if (!client.includes(clientRequirement)) throw new Error(`Missing interactive story progression behavior: ${clientRequirement}`);
 }
+for (const comprehensionRequirement of ['evidence-trail','evidenceOrbit','attemptCount','answerMeterFill','earned-evidence']) {
+  if (!html.includes(comprehensionRequirement)) throw new Error(`Missing interactive comprehension requirement: ${comprehensionRequirement}`);
+}
+for (const comprehensionBehavior of ['renderEvidenceTrail','evidenceLabels','comprehensionAttempts','updateAnswerMeter']) {
+  if (!client.includes(comprehensionBehavior)) throw new Error(`Missing comprehension evidence behavior: ${comprehensionBehavior}`);
+}
 if (/type=["']date/i.test(html) || /id=["'][^"']*(birth|dob)/i.test(html)) throw new Error('Prototype must not collect a birth date');
 if (/OPENAI_API_KEY=\S+/.test(env)) throw new Error('.env.example contains a real-looking secret');
 for (const requirement of ['node-version: 20', 'run: npm test', 'run: git diff --check']) {
