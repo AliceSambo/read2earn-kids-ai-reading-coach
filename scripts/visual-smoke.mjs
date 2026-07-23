@@ -54,6 +54,12 @@ try {
   await page.getByRole('button', { name: /confirm & enter learning world/i }).click();
   const profile = await page.evaluate(() => JSON.parse(localStorage.getItem('read2earn-demo-profile')));
   if (profile?.readingLevel !== 'growing' || profile?.grownUpConfirmed !== true) throw new Error('Reading level or grown-up confirmation was not saved.');
+  await page.screenshot({ path: join(outputDir, 'learning-world-desktop.png'), fullPage: true });
+  const ocean = page.getByRole('button', { name: /Discovery Ocean/i });
+  await ocean.focus();
+  await page.getByText(/creatures are still gathering questions/i).waitFor();
+  await ocean.press('Enter');
+  await page.getByText(/Discovery Ocean is coming in a future chapter/i).waitFor();
   await page.getByRole('button', { name: /story forest/i }).click();
   await page.getByRole('button', { name: /read with my companion/i }).click();
   await page.evaluate(() => Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: undefined }));
@@ -118,6 +124,11 @@ try {
   const overflow = await mobilePage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   if (overflow) throw new Error('Mobile layout has horizontal overflow.');
   await mobilePage.screenshot({ path: join(outputDir, 'read2earn-welcome-mobile.png'), fullPage: true });
+  await mobilePage.evaluate(() => localStorage.setItem('read2earn-demo-profile', JSON.stringify({ childName: 'Mina', companionName: 'Nova', avatar: '🦉', readingLevel: 'growing', quiet: false, speechRate: 1, grownUpConfirmed: true })));
+  await mobilePage.reload({ waitUntil: 'networkidle' });
+  await mobilePage.getByRole('button', { name: /Read2Earn Kids home/i }).click();
+  if (await mobilePage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)) throw new Error('Learning World has horizontal overflow on mobile.');
+  await mobilePage.screenshot({ path: join(outputDir, 'learning-world-mobile.png'), fullPage: true });
   await mobilePage.goto('http://127.0.0.1:4192/design-system-demo.html', { waitUntil: 'networkidle' });
   const labOverflow = await mobilePage.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   if (labOverflow) throw new Error('Design-system laboratory has horizontal overflow on mobile.');
@@ -165,7 +176,7 @@ try {
   await zoomedPage.screenshot({ path: join(outputDir, 'onboarding-welcome-200-percent-text.png'), fullPage: true });
   await zoomed.close();
 
-  console.log(`Visual journey passed: live prototype regression, onboarding at 320/375/768/desktop, keyboard journey, 200% text, design-system rendering, modal focus, reduced motion, and overflow checks. Screenshots: ${outputDir}`);
+  console.log(`Visual journey passed: live prototype regression, interactive Learning World desktop/mobile and keyboard previews, onboarding at 320/375/768/desktop, 200% text, design-system rendering, modal focus, reduced motion, and overflow checks. Screenshots: ${outputDir}`);
 } finally {
   await browser?.close();
   server.kill();

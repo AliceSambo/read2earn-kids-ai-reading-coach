@@ -22,6 +22,9 @@ if (/(^|[^.])\bspeechSynthesis\?\./m.test(client)) throw new Error('Speech synth
 for (const label of ['Emerging Reader','Growing Reader','Confident Reader','PROTOTYPE GROWN-UP GATE']) {
   if (!html.includes(label)) throw new Error(`Missing privacy or grown-up gate element: ${label}`);
 }
+for (const mapRequirement of ['interactive-world-map','mapGuidance','data-locked','MISSION READY']) {
+  if (!html.includes(mapRequirement)) throw new Error(`Missing interactive Learning World requirement: ${mapRequirement}`);
+}
 if (/type=["']date/i.test(html) || /id=["'][^"']*(birth|dob)/i.test(html)) throw new Error('Prototype must not collect a birth date');
 if (/OPENAI_API_KEY=\S+/.test(env)) throw new Error('.env.example contains a real-looking secret');
 for (const requirement of ['node-version: 20', 'run: npm test', 'run: git diff --check']) {
