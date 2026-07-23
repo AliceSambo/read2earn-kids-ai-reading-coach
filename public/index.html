@@ -113,19 +113,33 @@
         <div class="companion-message map-companion-guide"><span id="mapAvatar">🦊</span><p><small>YOUR COMPANION SAYS</small><b id="mapCompanion">Kiko</b>: <span id="mapGuidance" aria-live="polite">“Story Forest’s lantern has gone dark. I think your reading power can help!”</span></p><span class="guide-spark" aria-hidden="true">✦</span></div>
       </section>
 
-      <section class="screen" data-screen="mission" aria-labelledby="mission-title" tabindex="-1">
-        <button class="back-button" data-go="map">← Learning world</button>
-        <div class="mission-layout">
-          <article class="mission-card"><p class="eyebrow">STORY FOREST • MISSION 01</p><h2 id="mission-title">The Lantern in Story Forest</h2><p>A tiny firefly needs help before night covers the forest.</p><ul><li>⏱ About 6 minutes</li><li>◆ Comprehension Gem</li><li>🔊 Voice support</li></ul><div class="mission-scene"><span>🌲</span><span class="mission-lantern">🏮</span><span>🌲</span></div></article>
-          <div class="mode-panel"><h3>How would you like to read?</h3><button class="mode-card" data-mode="self"><span>📖</span><span><b>Read by myself</b><small>I’ll ask for help when I need it.</small></span></button><button class="mode-card featured" data-mode="together"><span id="modeAvatar">🦊</span><span><b>Read with my companion</b><small>We’ll pause and explore words together.</small></span><i>Recommended</i></button><button class="mode-card" data-mode="listen"><span>🎧</span><span><b>Listen and follow</b><small>Hear each part while the words glow.</small></span></button></div>
+      <section class="screen story-mission-screen" data-screen="mission" aria-labelledby="mission-title" tabindex="-1">
+        <div class="mission-topline"><button class="back-button" data-go="map">← Learning world</button><span>MISSION 01 OF 01</span></div>
+        <div class="mission-layout mission-portal">
+          <article class="mission-card mission-brief">
+            <div><p class="eyebrow">STORY FOREST • LIVING MISSION</p><h2 id="mission-title">The Lantern in Story Forest</h2><p class="mission-lead">Night is arriving, the lantern is dark, and a tiny firefly needs a thoughtful reader.</p></div>
+            <div class="mission-objectives" aria-label="Mission goals"><span><b>01</b><small>Explore the story</small></span><span><b>02</b><small>Help Lumi safely</small></span><span><b>03</b><small>Share what changed</small></span></div>
+            <div class="mission-facts"><span>⏱ About 6 minutes</span><span>◆ Comprehension Gem</span><span>🔊 Voice support</span></div>
+            <div class="mission-companion"><span id="missionAvatar" aria-hidden="true">🦊</span><p><small>YOUR COMPANION SAYS</small><b id="missionCompanion">Kiko</b>: “We do not need to rush. We can notice every clue together.”</p></div>
+          </article>
+          <div class="mission-stage" aria-label="A moonlit forest with an unlit lantern and a waiting firefly">
+            <span class="stage-moon" aria-hidden="true"></span><span class="stage-stars" aria-hidden="true">· ✦ ·</span><span class="stage-tree stage-tree-left" aria-hidden="true">♠</span><span class="stage-tree stage-tree-right" aria-hidden="true">♠</span><span class="stage-firefly" aria-hidden="true">✦</span><span class="stage-lantern" aria-hidden="true">🏮</span>
+            <p><span aria-hidden="true">✦</span><b>The lantern is waiting</b><small>Your understanding—not speed—will bring back its light.</small></p>
+          </div>
         </div>
+        <div class="mode-panel mission-mode-panel"><div><p class="eyebrow">CHOOSE YOUR SUPPORT</p><h3>How would you like to read?</h3><p>You can change your mind and return here at any time.</p></div><div class="mode-grid"><button class="mode-card" data-mode="self"><span>📖</span><span><b>Read by myself</b><small>I’ll ask for help when I need it.</small></span></button><button class="mode-card featured" data-mode="together"><span id="modeAvatar">🦊</span><span><b>Read with my companion</b><small>We’ll pause and explore words together.</small></span><i>Recommended</i></button><button class="mode-card" data-mode="listen"><span>🎧</span><span><b>Listen and follow</b><small>Hear each part while the words glow.</small></span></button></div></div>
       </section>
 
-      <section class="screen" data-screen="reader" aria-labelledby="reader-title" tabindex="-1">
-        <div class="reader-top"><button class="back-button" data-go="mission">← Reading modes</button><span id="readingModeLabel">Read with my companion</span><span>Part <b id="pageNumber">1</b> of 4</span></div>
-        <div class="reader-layout">
-          <aside class="story-rail"><div class="mini-world"><span id="readerAvatar">🦊</span><div class="mini-lantern">✦</div></div><div class="progress-track"><i id="storyProgress"></i></div><p id="readerEncouragement">Kiko is exploring with you.</p></aside>
-          <article class="reading-page"><p class="eyebrow">THE LANTERN IN STORY FOREST</p><h2 id="reader-title">A light between the trees</h2><p class="story-text" id="storyText"></p><div class="word-help" id="wordHelp" hidden><button class="close-help" aria-label="Close word help">×</button><p class="eyebrow">WORD DISCOVERY</p><h3 id="helpWord"></h3><p id="helpSyllables"></p><p id="helpMeaning"></p><button class="secondary-button" id="sayWord">🔊 Hear this word</button></div><div class="reader-controls"><button class="secondary-button" id="narrateButton">🔊 Read this part</button><button class="primary-button" id="nextPage">Next part →</button></div><p class="reader-hint">Tip: select a glowing word to discover what it means.</p></article>
+      <section class="screen immersive-reader-screen" data-screen="reader" aria-labelledby="reader-title" tabindex="-1">
+        <div class="reader-top"><button class="back-button" data-go="mission">← Reading modes</button><span class="mode-pill" id="readingModeLabel">Read with my companion</span><span class="part-label">Part <b id="pageNumber">1</b> of 4</span></div>
+        <div class="chapter-dots" id="chapterDots" aria-label="Story progress"><i class="is-current"></i><i></i><i></i><i></i></div>
+        <div class="reader-layout immersive-reader-layout">
+          <aside class="story-rail living-story-scene" id="readerScene" data-moment="1" aria-label="The Story Forest changes as the story unfolds">
+            <div class="reader-sky" aria-hidden="true"><span>✦</span><span>·</span><span>✦</span></div><div class="reader-hills" aria-hidden="true"></div><span class="reader-tree reader-tree-one" aria-hidden="true">♠</span><span class="reader-tree reader-tree-two" aria-hidden="true">♠</span><span class="reader-lumi" aria-hidden="true">✦</span><span class="reader-lantern" aria-hidden="true">🏮</span>
+            <div class="scene-companion"><span id="readerAvatar">🦊</span><p id="readerEncouragement">Kiko is exploring with you.</p></div>
+            <div class="progress-track"><i id="storyProgress"></i></div><small id="sceneMoment">A small light appears between the trees.</small>
+          </aside>
+          <article class="reading-page immersive-reading-page"><p class="eyebrow">THE LANTERN IN STORY FOREST</p><h2 id="reader-title">A light between the trees</h2><p class="story-text" id="storyText"></p><div class="word-help" id="wordHelp" hidden><button class="close-help" aria-label="Close word help">×</button><p class="eyebrow">WORD DISCOVERY</p><h3 id="helpWord"></h3><p id="helpSyllables"></p><p id="helpMeaning"></p><button class="secondary-button" id="sayWord">🔊 Hear this word</button></div><div class="reader-controls"><button class="secondary-button" id="narrateButton">🔊 Read this part</button><button class="primary-button" id="nextPage">Next part →</button></div><p class="reader-hint"><span aria-hidden="true">✦</span> Glowing words open pronunciation and child-friendly meanings.</p></article>
         </div>
       </section>
 

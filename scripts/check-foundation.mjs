@@ -25,6 +25,12 @@ for (const label of ['Emerging Reader','Growing Reader','Confident Reader','PROT
 for (const mapRequirement of ['interactive-world-map','mapGuidance','data-locked','MISSION READY']) {
   if (!html.includes(mapRequirement)) throw new Error(`Missing interactive Learning World requirement: ${mapRequirement}`);
 }
+for (const missionRequirement of ['story-mission-screen','mission-objectives','missionCompanion','immersive-reader-screen','readerScene','chapterDots','sceneMoment']) {
+  if (!html.includes(missionRequirement)) throw new Error(`Missing immersive Story Forest requirement: ${missionRequirement}`);
+}
+for (const clientRequirement of ['chapterTitles','sceneMoments',"dataset.moment = String(state.page + 1)"]) {
+  if (!client.includes(clientRequirement)) throw new Error(`Missing interactive story progression behavior: ${clientRequirement}`);
+}
 if (/type=["']date/i.test(html) || /id=["'][^"']*(birth|dob)/i.test(html)) throw new Error('Prototype must not collect a birth date');
 if (/OPENAI_API_KEY=\S+/.test(env)) throw new Error('.env.example contains a real-looking secret');
 for (const requirement of ['node-version: 20', 'run: npm test', 'run: git diff --check']) {
