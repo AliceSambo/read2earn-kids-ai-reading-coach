@@ -98,8 +98,9 @@ function confirmProfile() {
 
 function updateIdentity() {
   $('#mapGreeting').textContent = `Welcome, ${state.childName}. Every path holds something new to discover.`;
-  ['#mapAvatar','#modeAvatar','#readerAvatar','#questionAvatar','#reportAvatar'].forEach((id) => $(id).textContent = state.avatar);
+  ['#mapAvatar','#missionAvatar','#modeAvatar','#readerAvatar','#questionAvatar','#reportAvatar'].forEach((id) => $(id).textContent = state.avatar);
   $('#mapCompanion').textContent = state.companionName;
+  $('#missionCompanion').textContent = state.companionName;
   $('#worldGemCount').textContent = state.gems;
   $('#readerEncouragement').textContent = `${state.companionName} is exploring with you.`;
   $('#reportName').textContent = state.childName;
@@ -126,6 +127,15 @@ function renderPage() {
   $('#storyText').innerHTML = html;
   $('#pageNumber').textContent = state.page + 1;
   $('#storyProgress').style.width = `${((state.page + 1) / state.story.paragraphs.length) * 100}%`;
+  $('#readerScene').dataset.moment = String(state.page + 1);
+  const chapterTitles = ['A light between the trees', 'A gentle choice', 'Waiting with patience', 'The safe path glows'];
+  const sceneMoments = ['A small light appears between the trees.', 'Nia lowers her hands and moves gently.', 'The forest waits quietly with Lumi.', 'The lantern and safe path glow again.'];
+  $('#reader-title').textContent = chapterTitles[state.page];
+  $('#sceneMoment').textContent = sceneMoments[state.page];
+  $$('#chapterDots i').forEach((dot, index) => {
+    dot.classList.toggle('is-current', index === state.page);
+    dot.classList.toggle('is-complete', index < state.page);
+  });
   $('#nextPage').textContent = state.page === state.story.paragraphs.length - 1 ? 'Tell what happened →' : 'Next part →';
   const encouragements = [
     `${state.companionName} spotted a light ahead.`,
