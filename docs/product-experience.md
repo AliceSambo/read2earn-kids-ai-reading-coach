@@ -37,7 +37,7 @@ The comprehension journey visualizes three distinct pieces of story evidence:
 2. **What Nia did** — patient, gentle, guiding, helping, or protective action.
 3. **What changed** — the path or forest became safe or bright, or the lantern was restored.
 
-The child can answer by typing or supported browser voice input. A warm evidence trail shows which ideas were demonstrated and invites another attempt when an idea is missing. Attempts are never scored, ranked, or described as failure. The Knowledge Gem remains inactive until all three categories are present, then assembles into a visible Comprehension Gem with human-readable evidence. Reduced-motion mode presents the same state change without decorative animation.
+The child answers three short questions one at a time: who needed help, what Nia did, and what changed. Each question accepts typing or supported browser voice input, gives a focused clue when needed, and lights one corresponding part of the evidence trail before revealing the next question. Attempts are never scored, ranked, or described as failure. The Knowledge Gem remains inactive until all three categories are present, then assembles into a visible Comprehension Gem with human-readable evidence. Reduced-motion mode presents the same state change without decorative animation.
 
 ## Future platform, not prototype scope
 
