@@ -4,7 +4,7 @@ initializeDesignSystem();
 
 const state = {
   screen: 'welcome', childName: '', companionName: 'Kiko', avatar: '🦊', mode: 'together', page: 0,
-  story: null, wordsExplored: new Set(), answer: '', feedback: null, rating: null, gems: 0,
+  story: null, wordsExplored: new Set(), answer: '', feedback: null, rating: null, gems: 0, comprehensionAttempts: 0,
   quiet: false, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, speechRate: .9,
   readingLevel: 'emerging', grownUpConfirmed: false
 };
@@ -98,9 +98,10 @@ function confirmProfile() {
 
 function updateIdentity() {
   $('#mapGreeting').textContent = `Welcome, ${state.childName}. Every path holds something new to discover.`;
-  ['#mapAvatar','#missionAvatar','#modeAvatar','#readerAvatar','#questionAvatar','#reportAvatar'].forEach((id) => $(id).textContent = state.avatar);
+  ['#mapAvatar','#missionAvatar','#modeAvatar','#readerAvatar','#questionAvatar','#questionCompanionAvatar','#reportAvatar'].forEach((id) => $(id).textContent = state.avatar);
   $('#mapCompanion').textContent = state.companionName;
   $('#missionCompanion').textContent = state.companionName;
+  $('#questionCompanionName').textContent = `${state.companionName} is listening`;
   $('#worldGemCount').textContent = state.gems;
   $('#readerEncouragement').textContent = `${state.companionName} is exploring with you.`;
   $('#reportName').textContent = state.childName;
@@ -196,6 +197,40 @@ function toggleAnswerMode(mode) {
   $('#answerText').hidden = voice;
 }
 
+const evidenceLabels = {
+  character: 'Who needed help',
+  action: 'What Nia did',
+  outcome: 'What changed'
+};
+
+function renderEvidenceTrail(evidence = []) {
+  const found = new Set(evidence);
+  const completed = Object.keys(evidenceLabels).filter((key) => found.has(key));
+  $$('.evidence-steps li').forEach((step) => {
+    const present = found.has(step.dataset.evidence);
+    step.classList.toggle('is-found', present);
+    step.querySelector('i').textContent = present ? 'Found ✓' : 'Keep looking';
+  });
+  Object.keys(evidenceLabels).forEach((key) => $(`.piece-${key}`).classList.toggle('is-found', found.has(key)));
+  $('#evidenceOrbit').dataset.complete = String(completed.length);
+  $('#evidenceNote').textContent = completed.length === 3
+    ? 'All three clues are connected. Your Knowledge Gem is ready!'
+    : completed.length
+      ? `${completed.length} of 3 clues found. Add the missing story idea${completed.length === 1 ? 's' : ''}.`
+      : 'The Gem stays quiet until your retelling shows all three clues.';
+}
+
+function updateAnswerMeter() {
+  const length = $('#answerText').value.trim().length;
+  const progress = Math.min(100, Math.round((length / 90) * 100));
+  $('#answerMeterFill').style.width = `${progress}%`;
+  $('#answerMeterText').textContent = length < 12
+    ? 'Start with the first story clue.'
+    : length < 45
+      ? 'Good start—connect what happened next.'
+      : 'Your retelling is ready for a clue check.';
+}
+
 function startRecognition() {
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!Recognition) {
@@ -206,7 +241,10 @@ function startRecognition() {
   recognition.lang = 'en';
   recognition.interimResults = true;
   recognition.onstart = () => { $('#voiceStatus').textContent = 'Listening… speak in your own words.'; $('#recordButton').classList.add('recording'); };
-  recognition.onresult = (event) => { $('#answerText').value = [...event.results].map((result) => result[0].transcript).join(' '); };
+  recognition.onresult = (event) => {
+    $('#answerText').value = [...event.results].map((result) => result[0].transcript).join(' ');
+    updateAnswerMeter();
+  };
   recognition.onerror = () => { $('#voiceStatus').textContent = 'I could not hear that clearly. You can try again or type your answer.'; };
   recognition.onend = () => { $('#recordButton').classList.remove('recording'); $('#voiceStatus').textContent = 'Your answer is ready. You can edit it in typing mode before sending.'; };
   recognition.start();
@@ -219,8 +257,10 @@ async function checkAnswer() {
     return;
   }
   $('#answerError').textContent = '';
+  state.comprehensionAttempts += 1;
+  $('#attemptCount').textContent = state.comprehensionAttempts;
   $('#checkAnswer').disabled = true;
-  $('#checkAnswer').textContent = 'Thinking with you…';
+  $('#checkAnswer').textContent = 'Connecting your clues…';
   try {
     const response = await fetch('/api/comprehension', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer }) });
     if (!response.ok) throw new Error('Feedback unavailable');
@@ -229,11 +269,14 @@ async function checkAnswer() {
     state.feedback = { understood: false, evidence: [], message: 'You shared an important idea. Let’s look once more at who Nia helped and what became safer.', nextPrompt: 'What changed after Nia waited patiently?' };
   }
   state.answer = answer;
+  renderEvidenceTrail(state.feedback.evidence);
   $('#feedbackTitle').textContent = state.feedback.understood ? `That was thoughtful, ${state.childName}!` : 'You found part of the story!';
+  $('#feedbackIcon').textContent = state.feedback.understood ? '◆' : '✦';
+  $('#feedbackCard').classList.toggle('is-complete', state.feedback.understood);
   $('#feedbackMessage').textContent = state.feedback.message;
   $('#nextPrompt').textContent = state.feedback.nextPrompt;
   $('#promptLabel').textContent = state.feedback.understood ? 'Think a little deeper:' : 'Try this clue:';
-  $('#continueToReward').textContent = state.feedback.understood ? 'Continue mission →' : 'Improve my answer';
+  $('#continueToReward').textContent = state.feedback.understood ? 'See my Knowledge Gem →' : 'Add the missing clue';
   $('#feedbackCard').hidden = false;
   $('#checkAnswer').hidden = true;
   $('#feedbackCard').scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth' });
@@ -244,7 +287,7 @@ function continueToReward() {
     $('#feedbackCard').hidden = true;
     $('#checkAnswer').hidden = false;
     $('#checkAnswer').disabled = false;
-    $('#checkAnswer').textContent = 'Share with my companion';
+    $('#checkAnswer').textContent = 'Let my companion check the clues';
     toggleAnswerMode('type');
     $('#answerText').focus();
     toast('Your effort counts. Use the clue and add to your answer.');
@@ -252,7 +295,9 @@ function continueToReward() {
   }
   state.gems = 1;
   $('#gemCount').textContent = state.gems;
-  const evidence = state.feedback.evidence?.length ? `Evidence: your answer included ${state.feedback.evidence.join(', ')}.` : 'Evidence: you explained the helping action and story outcome with support.';
+  const evidence = state.feedback.evidence?.length
+    ? `Evidence: ${state.feedback.evidence.map((key) => evidenceLabels[key] || key).join(' • ')}.`
+    : 'Evidence: you explained who needed help, the helping action, and the story outcome.';
   $('#gemEvidence').textContent = evidence;
   $('#rewardMessage').textContent = state.feedback.message;
   showScreen('reward');
@@ -326,6 +371,7 @@ function bindEvents() {
   $('.close-help').addEventListener('click', () => $('#wordHelp').hidden = true);
   $('#typeTab').addEventListener('click', () => toggleAnswerMode('type'));
   $('#voiceTab').addEventListener('click', () => toggleAnswerMode('voice'));
+  $('#answerText').addEventListener('input', updateAnswerMeter);
   $('#recordButton').addEventListener('click', startRecognition);
   $('#checkAnswer').addEventListener('click', checkAnswer);
   $('#continueToReward').addEventListener('click', continueToReward);
