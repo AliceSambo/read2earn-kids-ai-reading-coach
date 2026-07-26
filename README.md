@@ -10,7 +10,7 @@ This Build Week prototype demonstrates one complete, privacy-forward journey thr
 - Prototype grown-up confirmation gate with adult correction and privacy-minimising reading levels
 - Interactive learning-world map and reactive Story Forest mission
 - Read by myself, read with companion, and listen-and-follow modes
-- Browser narration with speed and quiet-mode controls
+- Enhanced on-device narration that prefers natural English voices, reads with sentence-level pacing, and includes grown-up voice, speed, and quiet-mode controls
 - Vocabulary meanings, syllables, and spoken pronunciation
 - Spoken comprehension where supported, with a typed fallback
 - Supportive, meaning-based comprehension feedback
@@ -39,7 +39,7 @@ Open `http://127.0.0.1:4173`.
 npm test
 ```
 
-The validation checks JavaScript syntax, required project files and screens, the grown-up gate, reading-level persistence, speech fallback, secret boundaries, story data, static serving, and the three-category deterministic comprehension fallback.
+The validation checks JavaScript syntax, required project files and screens, the grown-up gate, reading-level and narration-choice persistence, speech fallback, secret boundaries, story data, static serving, and the three-category deterministic comprehension fallback.
 
 For the browser journey and design-system laboratory, install the development-only browser driver and run:
 

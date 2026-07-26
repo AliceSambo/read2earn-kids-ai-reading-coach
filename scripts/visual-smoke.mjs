@@ -53,7 +53,7 @@ try {
   await page.getByLabel(/I’m a grown-up/i).check();
   await page.getByRole('button', { name: /confirm & enter learning world/i }).click();
   const profile = await page.evaluate(() => JSON.parse(localStorage.getItem('read2earn-demo-profile')));
-  if (profile?.readingLevel !== 'growing' || profile?.grownUpConfirmed !== true) throw new Error('Reading level or grown-up confirmation was not saved.');
+  if (profile?.readingLevel !== 'growing' || profile?.narrationVoice !== 'auto' || profile?.grownUpConfirmed !== true) throw new Error('Reading level, narration voice, or grown-up confirmation was not saved.');
   await page.screenshot({ path: join(outputDir, 'learning-world-desktop.png'), fullPage: true });
   const ocean = page.getByRole('button', { name: /Discovery Ocean/i });
   await ocean.focus();
