@@ -5,12 +5,12 @@
 - Responsive web experience with nine views: welcome, companion setup, prototype grown-up confirmation, world map, mission briefing, reading, comprehension, Knowledge Gem, and grown-up report.
 - Privacy-minimising Emerging Reader, Growing Reader, or Confident Reader choice; no birth date.
 - One original sample story, “The Lantern in Story Forest.”
-- Three reading modes and browser speech synthesis when supported.
+- Three reading modes and enhanced browser speech synthesis that prefers natural English voices, uses sentence-level pacing, and safely falls back when speech is unsupported.
 - Three vocabulary words with syllables, meanings, and pronunciation.
 - Spoken comprehension input when supported, with typed input always available.
 - Server-side comprehension endpoint plus deterministic offline fallback.
 - Evidence-backed Comprehension Gem and five-face story rating.
-- Quiet mode, reduced motion, narration speed, semantic controls, keyboard access, and strong focus states.
+- Quiet mode, reduced motion, grown-up voice choice, narration speed, semantic controls, keyboard access, and strong focus states.
 - Local-only progress persistence.
 
 ## Explicitly out of scope
@@ -19,4 +19,4 @@ Accounts, Firebase, payments, subscriptions, Web3, wallets, NFTs, public sharing
 
 ## Acceptance criteria
 
-The entire journey works without an API key. A grown-up must confirm the child and companion choices, reading level, and narration preferences before the learning world opens. No child data leaves the browser except the typed comprehension answer sent to the local prototype server. The client contains no secret or API-key reference. Every primary action is keyboard accessible. Reduced motion disables nonessential animation. The report states evidence and a next step.
+The entire journey works without an API key. Narration uses voices exposed by the child’s device and does not upload story audio. A grown-up must confirm the child and companion choices, reading level, and narration preferences before the learning world opens. No child data leaves the browser except the typed comprehension answer sent to the local prototype server. The client contains no secret or API-key reference. Every primary action is keyboard accessible. Reduced motion disables nonessential animation. The report states evidence and a next step.

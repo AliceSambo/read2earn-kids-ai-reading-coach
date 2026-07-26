@@ -31,6 +31,12 @@ for (const missionRequirement of ['story-mission-screen','mission-objectives','m
 for (const clientRequirement of ['chapterTitles','sceneMoments',"dataset.moment = String(state.page + 1)"]) {
   if (!client.includes(clientRequirement)) throw new Error(`Missing interactive story progression behavior: ${clientRequirement}`);
 }
+for (const narrationRequirement of ['preferredVoices','voiceQualityScore','narrationVoice','speakSentence','voiceschanged']) {
+  if (!client.includes(narrationRequirement)) throw new Error(`Missing enhanced free narration behavior: ${narrationRequirement}`);
+}
+for (const narrationControl of ['onboardingVoiceChoice','voiceChoice','Automatic — best available voice']) {
+  if (!html.includes(narrationControl)) throw new Error(`Missing grown-up narration control: ${narrationControl}`);
+}
 for (const comprehensionRequirement of ['evidence-trail','evidenceOrbit','attemptCount','answerMeterFill','earned-evidence']) {
   if (!html.includes(comprehensionRequirement)) throw new Error(`Missing interactive comprehension requirement: ${comprehensionRequirement}`);
 }

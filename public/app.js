@@ -7,6 +7,7 @@ const state = {
   story: null, wordsExplored: new Set(), answer: '', feedback: null, rating: null, gems: 0, comprehensionAttempts: 0,
   comprehensionQuestion: 0, comprehensionAnswers: {}, comprehensionEvidence: [],
   quiet: false, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, speechRate: .9,
+  narrationVoice: 'auto',
   readingLevel: 'emerging', grownUpConfirmed: false
 };
 
@@ -14,6 +15,51 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const blockedNameWords = new Set(['hate', 'kill', 'sex', 'stupid', 'idiot']);
 let recognition;
+let availableNarrationVoices = [];
+let narrationRun = 0;
+
+function voiceQualityScore(voice) {
+  const name = voice.name.toLocaleLowerCase();
+  const language = voice.lang.toLocaleLowerCase();
+  let score = language.startsWith('en') ? 30 : 0;
+  if (/(natural|neural|premium|enhanced|online)/u.test(name)) score += 50;
+  if (/(microsoft|google|apple)/u.test(name)) score += 15;
+  if (!voice.localService) score += 5;
+  return score;
+}
+
+function preferredVoices() {
+  return [...availableNarrationVoices]
+    .filter((voice) => voice.lang.toLocaleLowerCase().startsWith('en'))
+    .sort((a, b) => voiceQualityScore(b) - voiceQualityScore(a) || a.name.localeCompare(b.name))
+    .slice(0, 8);
+}
+
+function populateVoiceChoices() {
+  if (!window.speechSynthesis) return;
+  availableNarrationVoices = window.speechSynthesis.getVoices();
+  const voices = preferredVoices();
+  for (const selector of [$('#onboardingVoiceChoice'), $('#voiceChoice')]) {
+    if (!selector) continue;
+    selector.replaceChildren(new Option('Automatic — best available voice', 'auto'));
+    voices.forEach((voice) => selector.add(new Option(`${voice.name} (${voice.lang})`, voice.voiceURI)));
+    selector.value = voices.some((voice) => voice.voiceURI === state.narrationVoice) ? state.narrationVoice : 'auto';
+  }
+}
+
+function selectedNarrationVoice() {
+  if (state.narrationVoice !== 'auto') {
+    const chosen = availableNarrationVoices.find((voice) => voice.voiceURI === state.narrationVoice);
+    if (chosen) return chosen;
+  }
+  return preferredVoices()[0] || availableNarrationVoices[0] || null;
+}
+
+function stopNarration() {
+  narrationRun += 1;
+  window.speechSynthesis?.cancel();
+  $('#storyText')?.classList.remove('is-speaking');
+}
 
 async function loadStory() {
   const response = await fetch('/data/story.json');
@@ -28,7 +74,7 @@ function showScreen(name) {
     screen.classList.toggle('active', active);
     screen.hidden = !active;
   });
-  window.speechSynthesis?.cancel();
+  stopNarration();
   window.scrollTo({ top: 0, behavior: state.reducedMotion ? 'auto' : 'smooth' });
   requestAnimationFrame(() => $('.screen.active')?.focus({ preventScroll: true }));
 }
@@ -78,6 +124,7 @@ function renderConfirmation() {
   $('#onboardingQuietMode').checked = state.quiet;
   $('#onboardingSpeechRate').value = state.speechRate;
   $('#onboardingSpeedOutput').textContent = `${state.speechRate.toFixed(1)}×`;
+  $('#onboardingVoiceChoice').value = state.narrationVoice;
 }
 
 function confirmProfile() {
@@ -85,14 +132,17 @@ function confirmProfile() {
   state.readingLevel = $('input[name=readingLevel]:checked')?.value || 'emerging';
   state.quiet = $('#onboardingQuietMode').checked;
   state.speechRate = Number($('#onboardingSpeechRate').value);
+  state.narrationVoice = $('#onboardingVoiceChoice').value;
   state.grownUpConfirmed = true;
   localStorage.setItem('read2earn-demo-profile', JSON.stringify({
     childName: state.childName, companionName: state.companionName, avatar: state.avatar,
-    readingLevel: state.readingLevel, quiet: state.quiet, speechRate: state.speechRate, grownUpConfirmed: true
+    readingLevel: state.readingLevel, quiet: state.quiet, speechRate: state.speechRate,
+    narrationVoice: state.narrationVoice, grownUpConfirmed: true
   }));
   $('#quietMode').checked = state.quiet;
   $('#speechRate').value = state.speechRate;
   $('#speedOutput').textContent = `${state.speechRate.toFixed(1)}×`;
+  $('#voiceChoice').value = state.narrationVoice;
   updateIdentity();
   showScreen('map');
 }
@@ -167,20 +217,31 @@ function speak(text) {
     toast(state.quiet ? 'Quiet mode is on.' : 'Spoken narration is not supported here.');
     return;
   }
-  window.speechSynthesis.cancel();
-  const utterance = new window.SpeechSynthesisUtterance(text);
-  utterance.rate = state.speechRate;
-  utterance.pitch = 1.05;
-  utterance.onstart = () => $('#storyText').classList.add('is-speaking');
-  utterance.onend = () => $('#storyText').classList.remove('is-speaking');
-  utterance.onerror = () => $('#storyText').classList.remove('is-speaking');
-  window.speechSynthesis.speak(utterance);
+  stopNarration();
+  const run = narrationRun;
+  const sentences = String(text).trim().split(/(?<=[.!?])\s+/u).filter(Boolean);
+  const voice = selectedNarrationVoice();
+  const speakSentence = (index) => {
+    if (run !== narrationRun || index >= sentences.length) {
+      $('#storyText').classList.remove('is-speaking');
+      return;
+    }
+    const utterance = new window.SpeechSynthesisUtterance(sentences[index]);
+    utterance.rate = state.speechRate;
+    utterance.pitch = 1.02;
+    if (voice) utterance.voice = voice;
+    utterance.onstart = () => $('#storyText').classList.add('is-speaking');
+    utterance.onend = () => speakSentence(index + 1);
+    utterance.onerror = () => $('#storyText').classList.remove('is-speaking');
+    window.speechSynthesis.speak(utterance);
+  };
+  speakSentence(0);
 }
 
 function speakCurrentPart() { speak(state.story.paragraphs[state.page]); }
 
 function nextPage() {
-  window.speechSynthesis?.cancel();
+  stopNarration();
   if (state.page < state.story.paragraphs.length - 1) {
     state.page += 1;
     renderPage();
@@ -442,6 +503,7 @@ function bindEvents() {
   $('#grownUpGate').addEventListener('change', (event) => { $('#confirmProfile').disabled = !event.target.checked; });
   $('#confirmProfile').addEventListener('click', confirmProfile);
   $('#onboardingSpeechRate').addEventListener('input', (event) => { $('#onboardingSpeedOutput').textContent = `${Number(event.target.value).toFixed(1)}×`; });
+  $('#onboardingVoiceChoice').addEventListener('change', (event) => { state.narrationVoice = event.target.value; });
   $$('input[name=avatar]').forEach((input) => input.addEventListener('change', updateCompanionPreview));
   $('#companionName').addEventListener('input', updateCompanionPreview);
   updateCompanionPreview();
@@ -467,12 +529,16 @@ function bindEvents() {
   $('#continueToReward').addEventListener('click', continueToReward);
   $('#finishMission').addEventListener('click', finishMission);
   $('#settingsButton').addEventListener('click', () => $('#settingsDialog').showModal());
-  $('#quietMode').addEventListener('change', (event) => { state.quiet = event.target.checked; if (state.quiet) window.speechSynthesis?.cancel(); });
+  $('#quietMode').addEventListener('change', (event) => { state.quiet = event.target.checked; if (state.quiet) stopNarration(); });
   $('#printReport').addEventListener('click', () => window.print());
   $('#reducedMotion').addEventListener('change', (event) => { state.reducedMotion = event.target.checked; document.body.classList.toggle('reduce-motion', state.reducedMotion); });
   $('#speechRate').addEventListener('input', (event) => { state.speechRate = Number(event.target.value); $('#speedOutput').textContent = `${state.speechRate.toFixed(1)}×`; });
+  $('#voiceChoice').addEventListener('change', (event) => { state.narrationVoice = event.target.value; });
   $('#settingsDialog').addEventListener('close', () => {
-    localStorage.setItem('read2earn-demo-settings', JSON.stringify({ quiet: state.quiet, reducedMotion: state.reducedMotion, speechRate: state.speechRate }));
+    localStorage.setItem('read2earn-demo-settings', JSON.stringify({
+      quiet: state.quiet, reducedMotion: state.reducedMotion, speechRate: state.speechRate,
+      narrationVoice: state.narrationVoice
+    }));
   });
 }
 
@@ -483,6 +549,7 @@ function restoreSettings() {
     state.quiet = Boolean(saved.quiet);
     state.reducedMotion = Boolean(saved.reducedMotion);
     state.speechRate = Number(saved.speechRate) || .9;
+    state.narrationVoice = saved.narrationVoice || 'auto';
   } catch { localStorage.removeItem('read2earn-demo-settings'); }
 }
 
@@ -497,3 +564,5 @@ $('#reducedMotion').checked = state.reducedMotion;
 $('#quietMode').checked = state.quiet;
 $('#speechRate').value = state.speechRate;
 $('#speedOutput').textContent = `${state.speechRate.toFixed(1)}×`;
+populateVoiceChoices();
+if (window.speechSynthesis) window.speechSynthesis.addEventListener('voiceschanged', populateVoiceChoices);
