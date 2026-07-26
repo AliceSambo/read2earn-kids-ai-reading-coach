@@ -34,8 +34,11 @@ for (const clientRequirement of ['chapterTitles','sceneMoments',"dataset.moment 
 for (const comprehensionRequirement of ['evidence-trail','evidenceOrbit','attemptCount','answerMeterFill','earned-evidence']) {
   if (!html.includes(comprehensionRequirement)) throw new Error(`Missing interactive comprehension requirement: ${comprehensionRequirement}`);
 }
-for (const comprehensionBehavior of ['renderEvidenceTrail','evidenceLabels','comprehensionAttempts','updateAnswerMeter']) {
+for (const comprehensionBehavior of ['renderEvidenceTrail','evidenceLabels','comprehensionAttempts','updateAnswerMeter','comprehensionQuestions','renderComprehensionQuestion','comprehensionQuestion','comprehensionAnswers']) {
   if (!client.includes(comprehensionBehavior)) throw new Error(`Missing comprehension evidence behavior: ${comprehensionBehavior}`);
+}
+for (const prompt of ['Who needed help in the forest?','What did Nia do to help?','What changed after Nia helped?']) {
+  if (!client.includes(prompt)) throw new Error(`Missing one-question-at-a-time prompt: ${prompt}`);
 }
 if (/type=["']date/i.test(html) || /id=["'][^"']*(birth|dob)/i.test(html)) throw new Error('Prototype must not collect a birth date');
 if (/OPENAI_API_KEY=\S+/.test(env)) throw new Error('.env.example contains a real-looking secret');

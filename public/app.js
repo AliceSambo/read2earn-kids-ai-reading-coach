@@ -5,6 +5,7 @@ initializeDesignSystem();
 const state = {
   screen: 'welcome', childName: '', companionName: 'Kiko', avatar: '🦊', mode: 'together', page: 0,
   story: null, wordsExplored: new Set(), answer: '', feedback: null, rating: null, gems: 0, comprehensionAttempts: 0,
+  comprehensionQuestion: 0, comprehensionAnswers: {}, comprehensionEvidence: [],
   quiet: false, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, speechRate: .9,
   readingLevel: 'emerging', grownUpConfirmed: false
 };
@@ -184,7 +185,7 @@ function nextPage() {
     state.page += 1;
     renderPage();
     if (state.mode === 'listen') speakCurrentPart();
-  } else showScreen('comprehension');
+  } else beginComprehension();
 }
 
 function toggleAnswerMode(mode) {
@@ -203,13 +204,79 @@ const evidenceLabels = {
   outcome: 'What changed'
 };
 
+const comprehensionQuestions = [
+  {
+    key: 'character',
+    question: 'Who needed help in the forest?',
+    label: 'Who needed help in the forest?',
+    placeholder: 'Lumi the firefly...',
+    button: 'Check my first answer',
+    success: 'Yes—Lumi the firefly needed help.',
+    clue: 'Look for the little creature whose light had grown dim.'
+  },
+  {
+    key: 'action',
+    question: 'What did Nia do to help?',
+    label: 'What did Nia do to help?',
+    placeholder: 'Nia helped by...',
+    button: 'Check my second answer',
+    success: 'You noticed Nia’s gentle, patient choice.',
+    clue: 'Think about how Nia waited, guided, or protected Lumi.'
+  },
+  {
+    key: 'outcome',
+    question: 'What changed after Nia helped?',
+    label: 'What changed after Nia helped?',
+    placeholder: 'After Nia helped...',
+    button: 'Check my final answer',
+    success: 'Exactly—the light returned and the path became safe.',
+    clue: 'Remember what happened to the lantern, the light, or the forest path.'
+  }
+];
+
+function beginComprehension() {
+  state.comprehensionQuestion = 0;
+  state.comprehensionAnswers = {};
+  state.comprehensionEvidence = [];
+  state.comprehensionAttempts = 0;
+  state.feedback = null;
+  renderEvidenceTrail([]);
+  renderComprehensionQuestion();
+  showScreen('comprehension');
+}
+
+function renderComprehensionQuestion() {
+  const item = comprehensionQuestions[state.comprehensionQuestion];
+  const attempt = Number(state.comprehensionAnswers[`${item.key}Attempts`] || 0) + 1;
+  $('#questionProgressLabel').textContent = `QUESTION ${state.comprehensionQuestion + 1} OF 3`;
+  $('#attemptCount').textContent = attempt;
+  $('#currentQuestion').textContent = `“${item.question}”`;
+  $('#answerLabel').textContent = item.label;
+  $('#answerText').placeholder = item.placeholder;
+  $('#answerText').value = state.comprehensionAnswers[item.key] || '';
+  $('#checkAnswer').textContent = item.button;
+  $('#checkAnswer').hidden = false;
+  $('#checkAnswer').disabled = false;
+  $('#feedbackCard').hidden = true;
+  $('#answerError').textContent = '';
+  $$('[data-question-dot]').forEach((dot, index) => {
+    dot.classList.toggle('is-current', index === state.comprehensionQuestion);
+    dot.classList.toggle('is-complete', index < state.comprehensionQuestion);
+  });
+  renderEvidenceTrail(state.comprehensionEvidence);
+  toggleAnswerMode('type');
+  updateAnswerMeter();
+}
+
 function renderEvidenceTrail(evidence = []) {
   const found = new Set(evidence);
   const completed = Object.keys(evidenceLabels).filter((key) => found.has(key));
   $$('.evidence-steps li').forEach((step) => {
     const present = found.has(step.dataset.evidence);
+    const stepIndex = comprehensionQuestions.findIndex((question) => question.key === step.dataset.evidence);
     step.classList.toggle('is-found', present);
-    step.querySelector('i').textContent = present ? 'Found ✓' : 'Keep looking';
+    step.classList.toggle('is-current', !present && stepIndex === state.comprehensionQuestion);
+    step.querySelector('i').textContent = present ? 'Found ✓' : stepIndex === state.comprehensionQuestion ? 'Answering now' : 'Coming next';
   });
   Object.keys(evidenceLabels).forEach((key) => $(`.piece-${key}`).classList.toggle('is-found', found.has(key)));
   $('#evidenceOrbit').dataset.complete = String(completed.length);
@@ -222,13 +289,13 @@ function renderEvidenceTrail(evidence = []) {
 
 function updateAnswerMeter() {
   const length = $('#answerText').value.trim().length;
-  const progress = Math.min(100, Math.round((length / 90) * 100));
+  const progress = Math.min(100, Math.round((length / 24) * 100));
   $('#answerMeterFill').style.width = `${progress}%`;
-  $('#answerMeterText').textContent = length < 12
-    ? 'Start with the first story clue.'
-    : length < 45
-      ? 'Good start—connect what happened next.'
-      : 'Your retelling is ready for a clue check.';
+  $('#answerMeterText').textContent = length < 2
+    ? 'A short answer is enough.'
+    : length < 10
+      ? 'Good start—add a little more if you can.'
+      : 'Your answer is ready to check.';
 }
 
 function startRecognition() {
@@ -252,51 +319,74 @@ function startRecognition() {
 
 async function checkAnswer() {
   const answer = $('#answerText').value.trim();
-  if (answer.length < 12) {
-    $('#answerError').textContent = 'Tell us a little more. Who needed help, and what did Nia do?';
+  const item = comprehensionQuestions[state.comprehensionQuestion];
+  if (answer.length < 2) {
+    $('#answerError').textContent = 'Share a short answer before we check this clue.';
     return;
   }
   $('#answerError').textContent = '';
   state.comprehensionAttempts += 1;
-  $('#attemptCount').textContent = state.comprehensionAttempts;
+  state.comprehensionAnswers[`${item.key}Attempts`] = Number(state.comprehensionAnswers[`${item.key}Attempts`] || 0) + 1;
+  $('#attemptCount').textContent = state.comprehensionAnswers[`${item.key}Attempts`];
   $('#checkAnswer').disabled = true;
-  $('#checkAnswer').textContent = 'Connecting your clues…';
+  $('#checkAnswer').textContent = 'Checking this story clue…';
+  state.comprehensionAnswers[item.key] = answer;
+  const combinedAnswer = comprehensionQuestions
+    .map((question) => state.comprehensionAnswers[question.key])
+    .filter(Boolean)
+    .join(' ');
   try {
-    const response = await fetch('/api/comprehension', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer }) });
+    const response = await fetch('/api/comprehension', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: combinedAnswer }) });
     if (!response.ok) throw new Error('Feedback unavailable');
     state.feedback = await response.json();
   } catch {
-    state.feedback = { understood: false, evidence: [], message: 'You shared an important idea. Let’s look once more at who Nia helped and what became safer.', nextPrompt: 'What changed after Nia waited patiently?' };
+    state.feedback = { understood: false, evidence: state.comprehensionEvidence, message: 'Your effort matters. Let’s look at this story clue once more.', nextPrompt: item.clue };
   }
-  state.answer = answer;
-  renderEvidenceTrail(state.feedback.evidence);
-  $('#feedbackTitle').textContent = state.feedback.understood ? `That was thoughtful, ${state.childName}!` : 'You found part of the story!';
-  $('#feedbackIcon').textContent = state.feedback.understood ? '◆' : '✦';
-  $('#feedbackCard').classList.toggle('is-complete', state.feedback.understood);
-  $('#feedbackMessage').textContent = state.feedback.message;
-  $('#nextPrompt').textContent = state.feedback.nextPrompt;
-  $('#promptLabel').textContent = state.feedback.understood ? 'Think a little deeper:' : 'Try this clue:';
-  $('#continueToReward').textContent = state.feedback.understood ? 'See my Knowledge Gem →' : 'Add the missing clue';
+  const answeredCurrentQuestion = state.feedback.evidence?.includes(item.key);
+  if (answeredCurrentQuestion && !state.comprehensionEvidence.includes(item.key)) state.comprehensionEvidence.push(item.key);
+  state.answer = combinedAnswer;
+  renderEvidenceTrail(state.comprehensionEvidence);
+  const isFinal = state.comprehensionQuestion === comprehensionQuestions.length - 1;
+  const missionComplete = isFinal && state.feedback.understood && state.comprehensionEvidence.length === 3;
+  $('#feedbackTitle').textContent = answeredCurrentQuestion ? `Clue ${state.comprehensionQuestion + 1} found!` : 'Let’s try this one together.';
+  $('#feedbackIcon').textContent = answeredCurrentQuestion ? '✓' : '✦';
+  $('#feedbackCard').classList.toggle('is-complete', answeredCurrentQuestion);
+  $('#feedbackMessage').textContent = answeredCurrentQuestion ? item.success : 'That answer does not show this story clue yet—and that is okay.';
+  $('#nextPrompt').textContent = missionComplete
+    ? 'You connected all three parts of the story.'
+    : answeredCurrentQuestion
+      ? 'Your next question will light another part of the Gem.'
+      : item.clue;
+  $('#promptLabel').textContent = answeredCurrentQuestion ? 'What happens next:' : 'Try this clue:';
+  $('#continueToReward').textContent = missionComplete ? 'See my Knowledge Gem →' : answeredCurrentQuestion ? 'Next question →' : 'Try this question again';
+  $('#continueToReward').dataset.result = missionComplete ? 'complete' : answeredCurrentQuestion ? 'next' : 'retry';
   $('#feedbackCard').hidden = false;
   $('#checkAnswer').hidden = true;
   $('#feedbackCard').scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth' });
 }
 
 function continueToReward() {
-  if (!state.feedback?.understood) {
+  const result = $('#continueToReward').dataset.result;
+  if (result === 'retry') {
     $('#feedbackCard').hidden = true;
     $('#checkAnswer').hidden = false;
     $('#checkAnswer').disabled = false;
-    $('#checkAnswer').textContent = 'Let my companion check the clues';
+    $('#checkAnswer').textContent = comprehensionQuestions[state.comprehensionQuestion].button;
     toggleAnswerMode('type');
     $('#answerText').focus();
-    toast('Your effort counts. Use the clue and add to your answer.');
+    toast('Your effort counts. Use the clue and try this question again.');
+    return;
+  }
+  if (result === 'next') {
+    state.comprehensionQuestion += 1;
+    renderComprehensionQuestion();
+    $('#answerText').focus();
     return;
   }
   state.gems = 1;
   $('#gemCount').textContent = state.gems;
-  const evidence = state.feedback.evidence?.length
-    ? `Evidence: ${state.feedback.evidence.map((key) => evidenceLabels[key] || key).join(' • ')}.`
+  const evidence = state.comprehensionEvidence.length
+    ? `Evidence: ${state.comprehensionEvidence.map((key) => evidenceLabels[key] || key).join(' • ')}.`
     : 'Evidence: you explained who needed help, the helping action, and the story outcome.';
   $('#gemEvidence').textContent = evidence;
   $('#rewardMessage').textContent = state.feedback.message;
