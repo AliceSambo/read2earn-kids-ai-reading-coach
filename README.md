@@ -12,6 +12,7 @@ This Build Week prototype demonstrates one complete, privacy-forward journey thr
 - Read by myself, read with companion, and listen-and-follow modes
 - Enhanced on-device narration that prefers natural English voices, reads with sentence-level pacing, and includes grown-up voice, speed, and quiet-mode controls
 - Vocabulary meanings, syllables, and spoken pronunciation
+- A child-friendly story glossary collecting every outlined word in one accessible place
 - Spoken comprehension where supported, with a typed fallback
 - Supportive, meaning-based comprehension feedback
 - Evidence-backed Comprehension Gem
