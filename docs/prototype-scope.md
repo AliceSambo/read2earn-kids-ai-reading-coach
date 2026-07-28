@@ -6,7 +6,7 @@
 - Privacy-minimising Emerging Reader, Growing Reader, or Confident Reader choice; no birth date.
 - One original sample story, “The Lantern in Story Forest.”
 - Three reading modes and enhanced browser speech synthesis that prefers natural English voices, uses sentence-level pacing, and safely falls back when speech is unsupported.
-- Three vocabulary words with syllables, meanings, and pronunciation.
+- Three outlined vocabulary words with tap-in-place help and a complete story glossary containing syllables, child-friendly meanings, and pronunciation actions.
 - Spoken comprehension input when supported, with typed input always available.
 - Server-side comprehension endpoint plus deterministic offline fallback.
 - Evidence-backed Comprehension Gem and five-face story rating.

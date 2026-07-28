@@ -37,6 +37,12 @@ for (const narrationRequirement of ['preferredVoices','voiceQualityScore','narra
 for (const narrationControl of ['onboardingVoiceChoice','voiceChoice','Automatic — best available voice']) {
   if (!html.includes(narrationControl)) throw new Error(`Missing grown-up narration control: ${narrationControl}`);
 }
+for (const glossaryRequirement of ['glossaryDialog','glossaryList','Story glossary']) {
+  if (!html.includes(glossaryRequirement)) throw new Error(`Missing story glossary UI: ${glossaryRequirement}`);
+}
+for (const glossaryBehavior of ['renderGlossary','openGlossary','data-glossary-word','glossary-hear']) {
+  if (!client.includes(glossaryBehavior)) throw new Error(`Missing story glossary behavior: ${glossaryBehavior}`);
+}
 for (const comprehensionRequirement of ['evidence-trail','evidenceOrbit','attemptCount','answerMeterFill','earned-evidence']) {
   if (!html.includes(comprehensionRequirement)) throw new Error(`Missing interactive comprehension requirement: ${comprehensionRequirement}`);
 }

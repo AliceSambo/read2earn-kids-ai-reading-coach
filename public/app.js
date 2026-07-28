@@ -212,6 +212,31 @@ function showWord(word) {
   $('#wordHelp').scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth', block: 'nearest' });
 }
 
+function renderGlossary() {
+  const list = $('#glossaryList');
+  list.replaceChildren();
+  Object.entries(state.story.words).forEach(([word, detail], index) => {
+    const entry = document.createElement('article');
+    entry.className = 'glossary-entry';
+    entry.innerHTML = `
+      <span class="glossary-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
+      <div>
+        <h3>${word}</h3>
+        <p class="glossary-syllables">Say it in parts: <b>${detail.syllables}</b></p>
+        <p>${detail.meaning}.</p>
+      </div>
+      <button class="secondary-button glossary-hear" data-glossary-word="${word}" aria-label="Hear ${word}">🔊 Hear word</button>
+    `;
+    list.append(entry);
+  });
+}
+
+function openGlossary() {
+  stopNarration();
+  renderGlossary();
+  $('#glossaryDialog').showModal();
+}
+
 function speak(text) {
   if (state.quiet || !window.speechSynthesis || typeof window.SpeechSynthesisUtterance !== 'function') {
     toast(state.quiet ? 'Quiet mode is on.' : 'Spoken narration is not supported here.');
@@ -519,6 +544,14 @@ function bindEvents() {
   $$('[data-mode]').forEach((button) => button.addEventListener('click', () => selectMode(button.dataset.mode)));
   $('#nextPage').addEventListener('click', nextPage);
   $('#narrateButton').addEventListener('click', speakCurrentPart);
+  $('#openGlossary').addEventListener('click', openGlossary);
+  $('#closeGlossary').addEventListener('click', () => $('#glossaryDialog').close());
+  $('#glossaryList').addEventListener('click', (event) => {
+    const button = event.target.closest('[data-glossary-word]');
+    if (!button) return;
+    state.wordsExplored.add(button.dataset.glossaryWord);
+    speak(button.dataset.glossaryWord);
+  });
   $('#sayWord').addEventListener('click', () => speak($('#sayWord').dataset.word));
   $('.close-help').addEventListener('click', () => $('#wordHelp').hidden = true);
   $('#typeTab').addEventListener('click', () => toggleAnswerMode('type'));
